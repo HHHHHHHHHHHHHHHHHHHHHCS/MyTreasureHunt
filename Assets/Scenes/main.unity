@@ -232,9 +232,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b06d76a10b7077f4e92818775838df42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgElementPrefab: {fileID: 0}
-  a: 0
+  bgElementPrefab: {fileID: 1820800291080486, guid: 40fd749246391e24ea3bfb058819a77c,
+    type: 2}
   borderElementsPrefabs:
-  - {fileID: 0}
-  w: 0
-  h: 0
+  - {fileID: 1138421408826084, guid: f2a0c41475202164abe433ca2c217ac0, type: 2}
+  - {fileID: 1704787504117482, guid: ff78cce694f4b01429c0353662a78964, type: 2}
+  - {fileID: 1650438463624726, guid: e3e234b0357d5474b9ea067e65c09f04, type: 2}
+  - {fileID: 1272154500832116, guid: c4f0e835cfa6e414abe8effd4cc8a343, type: 2}
+  - {fileID: 1164183302187390, guid: 60b3c2f66bd170c4eabf7b03ea8f6516, type: 2}
+  - {fileID: 1135376498669310, guid: 1e823fd04efc9f8469228090181ca7fc, type: 2}
+  - {fileID: 1054903576731248, guid: 212abc7d25380ac4e883302b28151dea, type: 2}
+  - {fileID: 1948599659871616, guid: 11d47000e4c539f43ba25130d6ecd9f9, type: 2}
+  baseElement: {fileID: 114897337299235984, guid: 86c690d12897cd94a90620a7b59fb13c,
+    type: 2}
+  w: 19
+  h: 9
