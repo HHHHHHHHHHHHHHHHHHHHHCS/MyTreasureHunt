@@ -245,5 +245,15 @@ MonoBehaviour:
   - {fileID: 1948599659871616, guid: 11d47000e4c539f43ba25130d6ecd9f9, type: 2}
   baseElement: {fileID: 114897337299235984, guid: 86c690d12897cd94a90620a7b59fb13c,
     type: 2}
+  coverTiledSprites:
+  - {fileID: 21300000, guid: 4940e68e9638911489b85eec44abc19c, type: 3}
+  - {fileID: 21300000, guid: 6996d6072042f6240b076dbbb76f72c2, type: 3}
+  - {fileID: 21300000, guid: 10060e5e1ffab0d45ad4c6f44084f5bd, type: 3}
+  - {fileID: 21300000, guid: ba43a6739a03ff6479acfa25b1fc869e, type: 3}
+  - {fileID: 21300000, guid: 2be2c604470ca79419066e99ae9088cc, type: 3}
+  - {fileID: 21300000, guid: 9c0fff1be64073743bf4a0ae6d931579, type: 3}
+  - {fileID: 21300000, guid: 19a687afde61d7a4d80f23fb031ba97b, type: 3}
+  - {fileID: 21300000, guid: 261a33128f948a84b9159b71d175fd9a, type: 3}
+  - {fileID: 21300000, guid: 24c173480e557854fb04841df0fc0013, type: 3}
   w: 19
   h: 9

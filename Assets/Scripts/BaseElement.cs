@@ -40,7 +40,11 @@ public class BaseElement : MonoBehaviour
         name = "(" + x + "," + y + ")";
     }
 
-    public void LoadSprite(Sprite sprite)
+    /// <summary>
+    /// 切换当前元素的图片
+    /// </summary>
+    /// <param name="sprite"></param>
+    protected void LoadSprite(Sprite sprite)
     {
         gameObject.GetComponent<SpriteRenderer>()
             .sprite = sprite;
@@ -64,7 +68,7 @@ public class BaseElement : MonoBehaviour
 
     protected virtual void OnLeftMouseButton()
     {
-
+        OnPlayerStand();
     }
 
     protected virtual void OnMiddleMouseButton()

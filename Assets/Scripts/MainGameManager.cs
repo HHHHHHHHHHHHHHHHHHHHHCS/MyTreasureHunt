@@ -44,6 +44,7 @@ public class MainGameManager : MonoBehaviour
         var coverParent = new GameObject("Covers").transform;
         coverParent.SetParent(holder);
 
+        mapArray = new BaseElement[w, h];
         for (int i = 0; i < w; i++)
         {
             for (int j = 0; j < h; j++)
