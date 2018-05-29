@@ -14,7 +14,9 @@ public class MainGameManager : MonoBehaviour
     [Header("泥土预制体"), SerializeField]
     private BaseElement baseElement;
 
-
+    [Header("图片资源"), SerializeField]
+    private Sprite[] coverTiledSprites;
+    public Sprite[] CoverTiledSprites { get { return coverTiledSprites; } }
 
     [Header("关卡设置"), SerializeField]
     private int w;
