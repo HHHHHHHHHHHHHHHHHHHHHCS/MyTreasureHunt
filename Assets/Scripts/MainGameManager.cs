@@ -13,10 +13,19 @@ public class MainGameManager : MonoBehaviour
     private GameObject[] borderElementsPrefabs;
     [Header("泥土预制体"), SerializeField]
     private BaseElement baseElement;
+    [Header("Flag预制体"), SerializeField]
+    private GameObject flagElement;
+    public GameObject FlagElement { get { return flagElement; } }
+    [Header("Smoke预制体"), SerializeField]
+    private GameObject smokeEffect;
+    public GameObject SmokeEffect { get { return smokeEffect; } }
 
-    [Header("图片资源"), SerializeField]
+    [Header("泥土图片资源"), SerializeField]
     private Sprite[] coverTiledSprites;
     public Sprite[] CoverTiledSprites { get { return coverTiledSprites; } }
+    [Header("陷阱图片资源"), SerializeField]
+    private Sprite[] trapTiledSprites;
+    public Sprite[] TrapTiledSprites { get { return trapTiledSprites; } }
 
     [Header("关卡设置"), SerializeField]
     private int w;
@@ -71,6 +80,12 @@ public class MainGameManager : MonoBehaviour
         Instantiate(borderElementsPrefabs[5], new Vector3(w + 0.25f, h + 0.25f, 0), Quaternion.identity, bgParent);
         Instantiate(borderElementsPrefabs[6], new Vector3(-1.25f, -1.25f, 0), Quaternion.identity, bgParent);
         Instantiate(borderElementsPrefabs[7], new Vector3(w + 0.25f, -1.25f, 0), Quaternion.identity, bgParent);
+    }
+
+
+    private void InitMap()
+    {
+
     }
 
     private void ResetCamera()

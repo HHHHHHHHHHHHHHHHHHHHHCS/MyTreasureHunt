@@ -84,7 +84,6 @@ public class BaseElement : MonoBehaviour
 
     protected virtual void OnPlayerStand()
     {
-
     }
 
 }

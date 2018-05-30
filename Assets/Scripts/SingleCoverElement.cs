@@ -1,9 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class SingleCoverElement : BaseElement
 {
+    private GameObject flag;
+
     protected override void Awake()
     {
         base.Awake();
@@ -14,7 +17,7 @@ public class SingleCoverElement : BaseElement
             [Random.Range(0, MainGameManager.Instance.CoverTiledSprites.Length)]);
     }
 
-    public void UncoveredElement()
+    public virtual void UncoveredElement()
     {
         if (elementState == ElementState.UnCovered)
             return;
@@ -22,28 +25,79 @@ public class SingleCoverElement : BaseElement
         OnUncovered();
     }
 
-    public void UncoveredElementSingle()
+    public virtual void UncoveredElementSingle()
     {
 
     }
 
-    public void OnUncovered()
+    public virtual void OnUncovered()
     {
 
     }
 
-    public void AddCoverElement()
+    public virtual void AddCoverElement()
     {
 
     }
 
-    public void AddFlag()
+    public virtual void AddFlag()
     {
         elementState = ElementState.Marked;
+        flag = Instantiate(MainGameManager.Instance.FlagElement, transform);
+        flag.transform.localPosition = Vector3.zero;
+        flag.transform.localScale = Vector3.one*1.25f;
+        flag.transform.DOScale(Vector3.one, 0.15f);
+        Instantiate(MainGameManager.Instance.SmokeEffect,transform);
     }
 
-    public void RemoveFlag()
+    public virtual void RemoveFlag()
     {
-        elementState = ElementState.Covered;
+        if (flag)
+        {
+            elementState = ElementState.Covered;
+            flag.transform.DOLocalMoveY(0.15f, 0.1f)
+                .onComplete += () => { Destroy(flag); flag = null; };
+        }
+    }
+
+    protected override void OnRightMouseButton()
+    {
+        switch (elementState)
+        {
+            case ElementState.Covered:
+                AddFlag();
+                break;
+            case ElementState.UnCovered:
+                return;
+            case ElementState.Marked:
+                RemoveFlag();
+                break;
+        }
+    }
+
+    protected override void OnPlayerStand()
+    {
+        switch (elementState)
+        {
+            case ElementState.Covered:
+                UncoveredElement();
+                break;
+            case ElementState.UnCovered:
+                break;
+            case ElementState.Marked:
+                RemoveFlag();
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void ClearShaodow()
+    {
+        Transform shadow = transform.Find("Shadow");
+        if(shadow!=null)
+        {
+            Destroy(shadow.gameObject);
+        }
     }
 }

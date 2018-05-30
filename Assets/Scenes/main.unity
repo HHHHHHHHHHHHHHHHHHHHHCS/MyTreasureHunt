@@ -243,7 +243,11 @@ MonoBehaviour:
   - {fileID: 1135376498669310, guid: 1e823fd04efc9f8469228090181ca7fc, type: 2}
   - {fileID: 1054903576731248, guid: 212abc7d25380ac4e883302b28151dea, type: 2}
   - {fileID: 1948599659871616, guid: 11d47000e4c539f43ba25130d6ecd9f9, type: 2}
-  baseElement: {fileID: 114897337299235984, guid: 86c690d12897cd94a90620a7b59fb13c,
+  baseElement: {fileID: 114944306034789576, guid: 86c690d12897cd94a90620a7b59fb13c,
+    type: 2}
+  flagElement: {fileID: 1049166124346236, guid: 49e452baace40f8479d86adab806946c,
+    type: 2}
+  smokeEffect: {fileID: 1122466527375896, guid: 8aa84dbe1a2a67a42a4b0690032e5af0,
     type: 2}
   coverTiledSprites:
   - {fileID: 21300000, guid: 4940e68e9638911489b85eec44abc19c, type: 3}
@@ -255,5 +259,11 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 19a687afde61d7a4d80f23fb031ba97b, type: 3}
   - {fileID: 21300000, guid: 261a33128f948a84b9159b71d175fd9a, type: 3}
   - {fileID: 21300000, guid: 24c173480e557854fb04841df0fc0013, type: 3}
+  trapTiledSprites:
+  - {fileID: 21300000, guid: 853fb5ddf3912014ea8f489105609d62, type: 3}
+  - {fileID: 21300000, guid: da46a565dd3cea845bf7596c3eff5e44, type: 3}
+  - {fileID: 21300000, guid: e3666731fb5307d4a96b45d20627bc8c, type: 3}
+  - {fileID: 21300000, guid: a68943ab3b65df84984ecb3e03eb816b, type: 3}
+  - {fileID: 21300000, guid: 1c4c2fa84b85733438639546b9ca1616, type: 3}
   w: 19
   h: 9
