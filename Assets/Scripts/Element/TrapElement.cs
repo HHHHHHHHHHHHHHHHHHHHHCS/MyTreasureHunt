@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class TrapElement : SingleCoverElement
 {
-    protected override void Awake()
+    public override void OnInit()
     {
-        base.Awake();
-        elementState = ElementState.Covered;
-        elementContent = ElementContent.Trap;
+        base.OnInit();
+        ElementState = ElementState.Covered;
+        ElementContent = ElementContent.Trap;
     }
 
     protected override void OnMiddleMouseButton()
@@ -18,12 +18,12 @@ public class TrapElement : SingleCoverElement
 
     public override void UncoveredElementSingle()
     {
-        if (elementState == ElementState.UnCovered)
+        if (ElementState == ElementState.UnCovered)
             return;
         RemoveFlag();
-        elementState = ElementState.UnCovered;
-        LoadSprite(MainGameManager.Instance.TrapTiledSprites
-            [Random.Range(0, MainGameManager.Instance.TrapTiledSprites.Length)]);
+        ElementState = ElementState.UnCovered;
+        LoadSprite(MainGameManager.Instance.TrapSprites
+            [Random.Range(0, MainGameManager.Instance.TrapSprites.Length)]);
 
     }
 

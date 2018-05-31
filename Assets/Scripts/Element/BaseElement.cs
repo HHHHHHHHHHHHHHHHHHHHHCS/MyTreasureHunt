@@ -29,11 +29,11 @@ public enum ElementContent
 public class BaseElement : MonoBehaviour
 {
     protected int x, y;
-    protected ElementState elementState;
-    protected ElementType elementType;
-    protected ElementContent elementContent;
+    public ElementState ElementState { get; protected set; }
+    public ElementType ElementType { get; protected set; }
+    public ElementContent ElementContent { get; protected set; }
 
-    protected virtual void Awake()
+    public virtual void OnInit()
     {
         x = (int)transform.position.x;
         y = (int)transform.position.y;
@@ -52,7 +52,7 @@ public class BaseElement : MonoBehaviour
 
     protected virtual void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(2) && elementState == ElementState.UnCovered)
+        if (Input.GetMouseButtonDown(2) && ElementState == ElementState.UnCovered)
         {
             OnMiddleMouseButton();
         }
@@ -73,7 +73,7 @@ public class BaseElement : MonoBehaviour
 
     protected virtual void OnMiddleMouseButton()
     {
-
+        MainGameManager.Instance.UncoveredAdjacentElements(x, y);
     }
 
 
@@ -82,7 +82,7 @@ public class BaseElement : MonoBehaviour
 
     }
 
-    protected virtual void OnPlayerStand()
+    public virtual void OnPlayerStand()
     {
     }
 

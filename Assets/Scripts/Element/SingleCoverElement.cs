@@ -7,11 +7,11 @@ public class SingleCoverElement : BaseElement
 {
     private GameObject flag;
 
-    protected override void Awake()
+    public override void OnInit()
     {
-        base.Awake();
+        base.OnInit();
         //设置自己的初始类型
-        elementType = ElementType.SingleCovered;
+        ElementType = ElementType.SingleCovered;
         //随机加载一张图片
         LoadSprite(MainGameManager.Instance.CoverTiledSprites
             [Random.Range(0, MainGameManager.Instance.CoverTiledSprites.Length)]);
@@ -19,7 +19,7 @@ public class SingleCoverElement : BaseElement
 
     public virtual void UncoveredElement()
     {
-        if (elementState == ElementState.UnCovered)
+        if (ElementState == ElementState.UnCovered)
             return;
         UncoveredElementSingle();
         OnUncovered();
@@ -42,7 +42,7 @@ public class SingleCoverElement : BaseElement
 
     public virtual void AddFlag()
     {
-        elementState = ElementState.Marked;
+        ElementState = ElementState.Marked;
         flag = Instantiate(MainGameManager.Instance.FlagElement, transform);
         flag.transform.localPosition = Vector3.zero;
         flag.transform.localScale = Vector3.one*1.25f;
@@ -54,7 +54,7 @@ public class SingleCoverElement : BaseElement
     {
         if (flag)
         {
-            elementState = ElementState.Covered;
+            ElementState = ElementState.Covered;
             flag.transform.DOLocalMoveY(0.15f, 0.1f)
                 .onComplete += () => { Destroy(flag); flag = null; };
         }
@@ -62,7 +62,7 @@ public class SingleCoverElement : BaseElement
 
     protected override void OnRightMouseButton()
     {
-        switch (elementState)
+        switch (ElementState)
         {
             case ElementState.Covered:
                 AddFlag();
@@ -75,9 +75,9 @@ public class SingleCoverElement : BaseElement
         }
     }
 
-    protected override void OnPlayerStand()
+    public override void OnPlayerStand()
     {
-        switch (elementState)
+        switch (ElementState)
         {
             case ElementState.Covered:
                 UncoveredElement();
