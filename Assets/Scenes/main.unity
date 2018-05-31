@@ -247,6 +247,8 @@ MonoBehaviour:
     type: 2}
   flagElement: {fileID: 1049166124346236, guid: 49e452baace40f8479d86adab806946c,
     type: 2}
+  errorElement: {fileID: 1735889795469590, guid: 90a425f682bd2ba47bab9f6837be346a,
+    type: 2}
   smokeEffect: {fileID: 1122466527375896, guid: 8aa84dbe1a2a67a42a4b0690032e5af0,
     type: 2}
   uncoveredEffect: {fileID: 1769657331637682, guid: ea0f61ff144d4f845b66379ab27f338b,

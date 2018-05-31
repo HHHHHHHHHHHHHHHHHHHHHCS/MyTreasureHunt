@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +17,9 @@ public class MainGameManager : MonoBehaviour
     [Header("Flag预制体"), SerializeField]
     private GameObject flagElement;
     public GameObject FlagElement { get { return flagElement; } }
+    [Header("错误的预制体"), SerializeField]
+    private GameObject errorElement;
+
 
     [Header("特效"), SerializeField]
     private GameObject smokeEffect;
@@ -105,12 +109,12 @@ public class MainGameManager : MonoBehaviour
 
     private void SpawnTrap(List<int> _avaliableIndex)
     {
-        float trapPro = Random.Range(minTrapProbability, maxTrapProbability);
+        float trapPro = UnityEngine.Random.Range(minTrapProbability, maxTrapProbability);
         int trapNum = (int)(_avaliableIndex.Count * trapPro);
 
         for (int i = 0; i < trapNum && _avaliableIndex.Count > 0; i++)
         {
-            int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
+            int temp = _avaliableIndex[UnityEngine.Random.Range(0, _avaliableIndex.Count)];
             SetElement<TrapElement>(temp);
             _avaliableIndex.Remove(temp);
         }
@@ -169,20 +173,14 @@ public class MainGameManager : MonoBehaviour
     public int CountAdjcentTraps(int x, int y)
     {
         int count = 0;
-        for (int i = x - 1; i <= x + 1; i++)
-        {
-            for (int j = y - 1; j <= y + 1; j++)
+        ForNearElement(x, y,
+            (i, j) =>
             {
-                if ((i != x || j != y) && (i >= 0 && j >= 0)
-                    && (i < w && j < h))
+                if (mapArray[i, j].ElementContent == ElementContent.Trap)
                 {
-                    if (mapArray[i, j].ElementContent == ElementContent.Trap)
-                    {
-                        count++;
-                    }
+                    count++;
                 }
-            }
-        }
+            });
         return count;
     }
 
@@ -193,8 +191,7 @@ public class MainGameManager : MonoBehaviour
             visited = new bool[w, h];
         }
 
-        if ((x >= 0 && y >= 0) && (x < w && y < h)
-            && !visited[x, y])
+        if ((x >= 0 && y >= 0) && (x < w && y < h) && !visited[x, y])
         {
             visited[x, y] = true;
             if (mapArray[x, y].ElementType == ElementType.CantCovered) return;
@@ -203,23 +200,59 @@ public class MainGameManager : MonoBehaviour
 
             if (CountAdjcentTraps(x, y) > 0) return;
 
-            for (int i = x - 1; i <= x + 1; i++)
-            {
-                for (int j = y - 1; j <= y + 1; j++)
-                {
-                    if ((i != x || j != y) && (i >= 0 && j >= 0)
-                        && (i < w && j < h))
-                    {
-                        FloodFillElement(i, j, visited);
-                    }
-                }
-            }
+            ForNearElement(x, y,
+            (i, j) => FloodFillElement(i, j, visited));
         }
     }
 
     public void UncoveredAdjacentElements(int x, int y)
     {
         int marked = 0;
+        ForNearElement(x, y,
+            (i, j) =>
+            {
+                if (mapArray[i, j].ElementState == ElementState.Marked
+                    || (mapArray[i, j].ElementState == ElementState.UnCovered
+                    && mapArray[i, j].ElementContent == ElementContent.Trap))
+                {
+                    marked++;
+                }
+            });
+
+
+
+        if (CountAdjcentTraps(x, y) == marked)
+        {
+            ForNearElement(x, y,
+            (i, j) =>
+            {
+                if (mapArray[i, j].ElementState != ElementState.Marked)
+                {
+                    mapArray[i, j].OnPlayerStand();
+                }
+            });
+        }
+    }
+
+    public void DisplayAllTraps()
+    {
+        foreach (BaseElement element in mapArray)
+        {
+            if (element.ElementState == ElementState.Covered
+                && element.ElementContent == ElementContent.Trap)
+            {
+
+            }
+            else if (element.ElementState != ElementState.Marked
+                && element.ElementContent == ElementContent.Trap)
+            {
+                Instantiate(errorElement, element.transform);
+            }
+        }
+    }
+
+    public void ForNearElement(int x, int y, Action<int, int> act)
+    {
         for (int i = x - 1; i <= x + 1; i++)
         {
             for (int j = y - 1; j <= y + 1; j++)
@@ -227,30 +260,7 @@ public class MainGameManager : MonoBehaviour
                 if ((i != x || j != y) && (i >= 0 && j >= 0)
                     && (i < w && j < h))
                 {
-                    if (mapArray[i, j].ElementState == ElementState.Marked
-                        || (mapArray[i, j].ElementState == ElementState.UnCovered
-                        && mapArray[i, j].ElementContent == ElementContent.Trap))
-                    {
-                        marked++;
-                    }
-                }
-            }
-        }
-
-        if (CountAdjcentTraps(x, y) == marked)
-        {
-            for (int i = x - 1; i <= x + 1; i++)
-            {
-                for (int j = y - 1; j <= y + 1; j++)
-                {
-                    if ((i != x || j != y) && (i >= 0 && j >= 0)
-                        && (i < w && j < h))
-                    {
-                        if (mapArray[i, j].ElementState != ElementState.Marked)
-                        {
-                            mapArray[i, j].OnPlayerStand();
-                        }
-                    }
+                    act(i, j);
                 }
             }
         }

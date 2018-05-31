@@ -24,7 +24,7 @@ public class TrapElement : SingleCoverElement
         ElementState = ElementState.UnCovered;
         LoadSprite(MainGameManager.Instance.TrapSprites
             [Random.Range(0, MainGameManager.Instance.TrapSprites.Length)]);
-
+        MainGameManager.Instance.DisplayAllTraps();
     }
 
     public override void OnUncovered()
