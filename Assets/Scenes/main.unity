@@ -253,6 +253,7 @@ MonoBehaviour:
     type: 2}
   uncoveredEffect: {fileID: 1769657331637682, guid: ea0f61ff144d4f845b66379ab27f338b,
     type: 2}
+  goldEffect: {fileID: 1661655272025886, guid: c120c923371184d429c87537bdb1ab61, type: 2}
   coverTiledSprites:
   - {fileID: 21300000, guid: 4940e68e9638911489b85eec44abc19c, type: 3}
   - {fileID: 21300000, guid: 6996d6072042f6240b076dbbb76f72c2, type: 3}
@@ -280,7 +281,26 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3813421b9001a324895bbf462e227040, type: 3}
   - {fileID: 21300000, guid: 3869f0712ec69d9479ee18e384ba67e7, type: 3}
   - {fileID: 21300000, guid: a7ec26bed9aca1e47a2b0ff9b27c6849, type: 3}
+  toolSprites:
+  - {fileID: 21300000, guid: 4bb3f6ce39c2e104cb844d039e9520a9, type: 3}
+  - {fileID: 21300000, guid: 6dd78cad6da8b584da04ee31eb3beca8, type: 3}
+  - {fileID: 21300000, guid: 961edd96a81dee84a89781aa0ff56e3b, type: 3}
+  - {fileID: 21300000, guid: 14f6e29a0db29ec41866cfe3d4068e70, type: 3}
+  - {fileID: 21300000, guid: 727fedc62d96b8041ac285a47651d1ea, type: 3}
+  - {fileID: 21300000, guid: dda05d34ec39a644296f5ce653a011e5, type: 3}
+  - {fileID: 21300000, guid: dd1a8c854be818a438da151c80543deb, type: 3}
+  - {fileID: 21300000, guid: 95a73897329515347affa96393e6fe3e, type: 3}
+  - {fileID: 21300000, guid: aeb2a594b59972847a85e4867164e61e, type: 3}
+  goldSprites:
+  - {fileID: 21300000, guid: af98ab6ba09df8b468abc08c502a4125, type: 3}
+  - {fileID: 21300000, guid: d8141469f2447a9438c098afa420ad87, type: 3}
+  - {fileID: 21300000, guid: 51dc7ca4958accd4ba0dba43d9064398, type: 3}
+  - {fileID: 21300000, guid: 97f80067ed177b948b938ac425aa0d18, type: 3}
+  - {fileID: 21300000, guid: e4ca3da15637ef147b5adaa08136a3ba, type: 3}
+  - {fileID: 21300000, guid: 0f0945ce5b63eff4bb42b6374259a2d4, type: 3}
+  - {fileID: 21300000, guid: 1b86569aedf3e0045a705e5bc5816849, type: 3}
   w: 19
   h: 9
   minTrapProbability: 0.12
   maxTrapProbability: 0.18
+  uncoverProbability: 0.1

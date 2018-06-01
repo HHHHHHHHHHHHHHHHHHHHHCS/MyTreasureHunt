@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NumberElement : SingleCoverElement
+public class TrapElement : SingleCoverElement
 {
     public override void OnInit()
     {
         base.OnInit();
-        ElementState = ElementState.Covered;
-        ElementContent = ElementContent.Number;
+        ElementContent = ElementContent.Trap;
     }
 
     protected override void OnMiddleMouseButton()
@@ -22,13 +21,13 @@ public class NumberElement : SingleCoverElement
             return;
         RemoveFlag();
         ElementState = ElementState.UnCovered;
-        ClearShaodow();
-        Instantiate(MainGameManager.Instance.UncoveredEffect, transform);
-        LoadSprite(MainGameManager.Instance.GetNumberSpriteByPos(x,y));
+        LoadSprite(MainGameManager.Instance.TrapSprites
+            [Random.Range(0, MainGameManager.Instance.TrapSprites.Length)]);
+        MainGameManager.Instance.DisplayAllTraps();
     }
 
     public override void OnUncovered()
     {
-        MainGameManager.Instance.FloodFillElement(x, y);
+        
     }
 }

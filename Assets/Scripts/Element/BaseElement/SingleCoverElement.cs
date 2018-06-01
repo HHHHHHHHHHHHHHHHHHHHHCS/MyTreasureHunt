@@ -11,6 +11,7 @@ public class SingleCoverElement : BaseElement
     {
         base.OnInit();
         //设置自己的初始类型
+        ElementState = ElementState.Covered;
         ElementType = ElementType.SingleCovered;
         //随机加载一张图片
         LoadSprite(MainGameManager.Instance.CoverTiledSprites

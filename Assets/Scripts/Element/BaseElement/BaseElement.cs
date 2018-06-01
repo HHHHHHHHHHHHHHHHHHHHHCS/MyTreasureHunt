@@ -38,6 +38,7 @@ public class BaseElement : MonoBehaviour
         x = (int)transform.position.x;
         y = (int)transform.position.y;
         name = "(" + x + "," + y + ")";
+
     }
 
     /// <summary>
@@ -73,7 +74,10 @@ public class BaseElement : MonoBehaviour
 
     protected virtual void OnMiddleMouseButton()
     {
-        MainGameManager.Instance.UncoveredAdjacentElements(x, y);
+        if (ElementState == ElementState.UnCovered)
+        {
+            MainGameManager.Instance.UncoveredAdjacentElements(x, y);
+        }
     }
 
 
@@ -86,4 +90,11 @@ public class BaseElement : MonoBehaviour
     {
     }
 
+
+    public virtual void ToNumberElement(bool needEffect = false)
+    {
+        var element = MainGameManager.Instance.SetElement<NumberElement>(x, y);
+        element.NeedEffect = needEffect;
+        element.UncoveredElement();
+    }
 }

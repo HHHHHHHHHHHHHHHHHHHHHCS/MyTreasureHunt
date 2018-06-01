@@ -27,6 +27,9 @@ public class MainGameManager : MonoBehaviour
     [SerializeField]
     private GameObject uncoveredEffect;
     public GameObject UncoveredEffect { get { return uncoveredEffect; } }
+    [SerializeField]
+    private GameObject goldEffect;
+    public GameObject GoldEffect { get { return goldEffect; } }
 
     [Header("泥土图片资源"), SerializeField]
     private Sprite[] coverTiledSprites;
@@ -37,6 +40,12 @@ public class MainGameManager : MonoBehaviour
     [Header("数字图片资源"), SerializeField]
     private Sprite[] numberSprites;
     public Sprite[] NumberSprites { get { return numberSprites; } }
+    [Header("道具图片资源"), SerializeField]
+    private Sprite[] toolSprites;
+    public Sprite[] ToolSprites { get { return toolSprites; } }
+    [Header("金币图片资源"), SerializeField]
+    private Sprite[] goldSprites;
+    public Sprite[] GoldSprites { get { return goldSprites; } }
 
     [Header("关卡设置"), SerializeField]
     private int w;
@@ -46,8 +55,11 @@ public class MainGameManager : MonoBehaviour
     private float minTrapProbability;
     [SerializeField]
     private float maxTrapProbability;
+    [SerializeField]
+    private float uncoverProbability;
+    public float UncoverProbability { get { return uncoverProbability; } }
 
-    private BaseElement[,] mapArray;
+    public BaseElement[,] MapArray { get; private set; }
 
     private void Awake()
     {
@@ -65,16 +77,16 @@ public class MainGameManager : MonoBehaviour
         var coverParent = new GameObject("Covers").transform;
         coverParent.SetParent(holder);
 
-        mapArray = new BaseElement[w, h];
+        MapArray = new BaseElement[w, h];
         for (int i = 0; i < w; i++)
         {
             for (int j = 0; j < h; j++)
             {
                 Instantiate(bgElementPrefab, new Vector3(i, j, 0)
                     , Quaternion.identity, bgParent);
-                mapArray[i, j] = Instantiate(baseElement, new Vector3(i, j, 0)
+                MapArray[i, j] = Instantiate(baseElement, new Vector3(i, j, 0)
                     , Quaternion.identity, coverParent);
-                mapArray[i, j].OnInit();
+                MapArray[i, j].OnInit();
             }
         }
 
@@ -104,6 +116,8 @@ public class MainGameManager : MonoBehaviour
             avaliableIndex.Add(i);
         }
         SpawnTrap(avaliableIndex);
+        SpawnTool(avaliableIndex);
+        SpawnGold(avaliableIndex);
         SpawnNumber(avaliableIndex);
     }
 
@@ -131,6 +145,25 @@ public class MainGameManager : MonoBehaviour
 
     }
 
+    private void SpawnTool(List<int> _avaliableIndex)
+    {
+        for (int i = 0; i < 10 && _avaliableIndex.Count > 0; i++)
+        {
+            int temp = _avaliableIndex[UnityEngine.Random.Range(0, _avaliableIndex.Count)];
+            SetElement<ToolElement>(temp);
+            _avaliableIndex.Remove(temp);
+        }
+    }
+    private void SpawnGold(List<int> _avaliableIndex)
+    {
+        for (int i = 0; i < 10 && _avaliableIndex.Count > 0; i++)
+        {
+            int temp = _avaliableIndex[UnityEngine.Random.Range(0, _avaliableIndex.Count)];
+            SetElement<GoldElement>(temp);
+            _avaliableIndex.Remove(temp);
+        }
+    }
+
     private void GetPosByIndex(int index, out int x, out int y)
     {
         y = index / w;
@@ -142,14 +175,22 @@ public class MainGameManager : MonoBehaviour
         return w * y + x;
     }
 
-    private void SetElement<T>(int index) where T : BaseElement
+
+
+    public void SetElement<T>(int index) where T : BaseElement
     {
         int x, y;
         GetPosByIndex(index, out x, out y);
-        var temp = mapArray[x, y].gameObject.AddComponent<T>();
+        SetElement<T>(x, y);
+    }
+
+    public T SetElement<T>(int x, int y) where T : BaseElement
+    {
+        var temp = MapArray[x, y].gameObject.AddComponent<T>();
         temp.OnInit();
-        Destroy(mapArray[x, y]);
-        mapArray[x, y] = temp;
+        Destroy(MapArray[x, y]);
+        MapArray[x, y] = temp;
+        return temp;
     }
 
     private void ResetCamera()
@@ -176,7 +217,7 @@ public class MainGameManager : MonoBehaviour
         ForNearElement(x, y,
             (i, j) =>
             {
-                if (mapArray[i, j].ElementContent == ElementContent.Trap)
+                if (MapArray[i, j].ElementContent == ElementContent.Trap)
                 {
                     count++;
                 }
@@ -194,14 +235,17 @@ public class MainGameManager : MonoBehaviour
         if ((x >= 0 && y >= 0) && (x < w && y < h) && !visited[x, y])
         {
             visited[x, y] = true;
-            if (mapArray[x, y].ElementType == ElementType.CantCovered) return;
+            if (MapArray[x, y].ElementType == ElementType.SingleCovered
+                && MapArray[x, y].ElementContent == ElementContent.Number)
+            {
 
-            ((SingleCoverElement)mapArray[x, y]).UncoveredElement();
+                ((SingleCoverElement)MapArray[x, y]).UncoveredElement();
 
-            if (CountAdjcentTraps(x, y) > 0) return;
+                if (CountAdjcentTraps(x, y) > 0) return;
 
-            ForNearElement(x, y,
-            (i, j) => FloodFillElement(i, j, visited));
+                ForNearElement(x, y,
+                (i, j) => FloodFillElement(i, j, visited));
+            }
         }
     }
 
@@ -211,9 +255,9 @@ public class MainGameManager : MonoBehaviour
         ForNearElement(x, y,
             (i, j) =>
             {
-                if (mapArray[i, j].ElementState == ElementState.Marked
-                    || (mapArray[i, j].ElementState == ElementState.UnCovered
-                    && mapArray[i, j].ElementContent == ElementContent.Trap))
+                if (MapArray[i, j].ElementState == ElementState.Marked
+                    || (MapArray[i, j].ElementState == ElementState.UnCovered
+                    && MapArray[i, j].ElementContent == ElementContent.Trap))
                 {
                     marked++;
                 }
@@ -226,9 +270,9 @@ public class MainGameManager : MonoBehaviour
             ForNearElement(x, y,
             (i, j) =>
             {
-                if (mapArray[i, j].ElementState != ElementState.Marked)
+                if (MapArray[i, j].ElementState != ElementState.Marked)
                 {
-                    mapArray[i, j].OnPlayerStand();
+                    MapArray[i, j].OnPlayerStand();
                 }
             });
         }
@@ -236,14 +280,14 @@ public class MainGameManager : MonoBehaviour
 
     public void DisplayAllTraps()
     {
-        foreach (BaseElement element in mapArray)
+        foreach (BaseElement element in MapArray)
         {
             if (element.ElementState == ElementState.Covered
                 && element.ElementContent == ElementContent.Trap)
             {
 
             }
-            else if (element.ElementState != ElementState.Marked
+            else if (element.ElementState == ElementState.Marked
                 && element.ElementContent == ElementContent.Trap)
             {
                 Instantiate(errorElement, element.transform);
