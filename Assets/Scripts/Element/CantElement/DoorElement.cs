@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CantCoveredElement : BaseElement
+public class DoorElement : CantCoveredElement
 {
     public override void OnInit()
     {
         base.OnInit();
-        ElementType = ElementType.CantCovered;
-        ElementState = ElementState.UnCovered;
+        ElementContent = ElementContent.BigWall;
+        LoadSprite(MainGameManager.Instance.DoorWallSprite);
     }
 }

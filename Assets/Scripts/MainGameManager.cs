@@ -5,6 +5,18 @@ using UnityEngine;
 
 public class MainGameManager : MonoBehaviour
 {
+    private struct CloseAreaInfo
+    {
+        int x, y, sx, ex, sy, ey;
+        public int doorType;
+        public Vector2Int doorPos;
+        public Vector2Int toolPos,goldPos;
+        public ToolElement t;
+        public GoldElement g;
+        public int innerCount, goldNumber;
+    }
+
+
     public static MainGameManager Instance { get; private set; }
 
     [Header("背景预制体"), SerializeField]
@@ -46,6 +58,21 @@ public class MainGameManager : MonoBehaviour
     [Header("金币图片资源"), SerializeField]
     private Sprite[] goldSprites;
     public Sprite[] GoldSprites { get { return goldSprites; } }
+    [Header("大墙图片资源"), SerializeField]
+    private Sprite[] bigWallSprites;
+    public Sprite[] BigWallSprites { get { return bigWallSprites; } }
+    [Header("小墙图片资源"), SerializeField]
+    private Sprite[] smallWallSprites;
+    public Sprite[] SmallWallSprites { get { return smallWallSprites; } }
+    [Header("敌人图片资源"), SerializeField]
+    private Sprite[] enemyWallSprites;
+    public Sprite[] EnemyWallSprites { get { return enemyWallSprites; } }
+    [Header("门图片资源"), SerializeField]
+    private Sprite doorWallSprite;
+    public Sprite DoorWallSprite { get { return doorWallSprite; } }
+    [Header("出口图片资源"), SerializeField]
+    private Sprite exitSprite;
+    public Sprite ExitSprite { get { return exitSprite; } }
 
     [Header("关卡设置"), SerializeField]
     private int w;
@@ -58,12 +85,21 @@ public class MainGameManager : MonoBehaviour
     [SerializeField]
     private float uncoverProbability;
     public float UncoverProbability { get { return uncoverProbability; } }
+    [SerializeField]
+    private int standAreaW;
+    public float StandAreaW { get { return standAreaW; } }
+    [SerializeField]
+    private int obstacleAreaW;
+    public int ObstacleAreaW { get { return obstacleAreaW; } }
+    public float ObstacleAreaNum { get; private set; }
+
 
     public BaseElement[,] MapArray { get; private set; }
 
     private void Awake()
     {
         Instance = this;
+        ObstacleAreaNum = (w - (StandAreaW - 3)) / ObstacleAreaW;
         CreateMap();
         InitMap();
         ResetCamera();
@@ -115,10 +151,72 @@ public class MainGameManager : MonoBehaviour
         {
             avaliableIndex.Add(i);
         }
+        SpawnExit(avaliableIndex);
         SpawnTrap(avaliableIndex);
         SpawnTool(avaliableIndex);
         SpawnGold(avaliableIndex);
         SpawnNumber(avaliableIndex);
+    }
+
+    private void SpawnExit(List<int> _avaliableIndex)
+    {
+        if (_avaliableIndex.Count >= 4)
+        {
+            float x = w - 1.5f;
+            float y = UnityEngine.Random.Range(1, h) - 0.5f;
+
+            Vector2[] vec2 = new[] {new Vector2(+0.5f,-0.5f), new Vector2(+0.5f,+0.5f)
+            , new Vector2(-0.5f, -0.5f) ,new Vector2(-0.5f, +0.5f)};
+
+            BaseElement exit = SetElement<ExitElement>((int)(x + vec2[0].x), (int)(y + vec2[0].y));
+            exit.transform.position = new Vector3(x, y, 0);
+            exit.GetComponent<BoxCollider2D>().size = new Vector2(2, 2);
+            //Destroy(exit.GetComponent<BoxCollider2D>());
+            //exit.gameObject.AddComponent<BoxCollider2D>();
+
+            for (int i = 0; i < vec2.Length; i++)
+            {
+                _avaliableIndex.Remove(GetIndexByPos((int)(x + vec2[i].x), (int)(y + vec2[i].y)));
+                if (i!=0)
+                {
+                    Destroy(MapArray[(int)(x + vec2[i].x), (int)(y + vec2[i].y)].gameObject);
+                    MapArray[(int)(x + vec2[i].x), (int)(y + vec2[i].y)] = exit;
+                }
+            }
+        }
+    }
+
+    private void SpawnObstacleArea(List<int> _avaliableIndex)
+    {
+        for(int i=0;i<ObstacleAreaNum;i++)
+        {
+            if(UnityEngine.Random.value<0.5f)
+            {
+                CreateCloseArea(i, _avaliableIndex);
+            }
+            else
+            {
+                CreateRandomWall(i, _avaliableIndex);
+            }
+        }
+    }
+
+    private void CreateCloseArea(int nowArea,List<int> _avaliableIndex)
+    {
+        int shape = UnityEngine.Random.Range(0, 2);
+        switch (shape)
+        {
+            case 0:
+                break;
+            case 1:
+                break;
+        }
+
+    }
+
+    private void CreateRandomWall(int nowArea, List<int> _avaliableIndex)
+    {
+
     }
 
     private void SpawnTrap(List<int> _avaliableIndex)
@@ -164,6 +262,8 @@ public class MainGameManager : MonoBehaviour
         }
     }
 
+
+
     private void GetPosByIndex(int index, out int x, out int y)
     {
         y = index / w;
@@ -177,11 +277,11 @@ public class MainGameManager : MonoBehaviour
 
 
 
-    public void SetElement<T>(int index) where T : BaseElement
+    public T SetElement<T>(int index) where T : BaseElement
     {
         int x, y;
         GetPosByIndex(index, out x, out y);
-        SetElement<T>(x, y);
+        return SetElement<T>(x, y);
     }
 
     public T SetElement<T>(int x, int y) where T : BaseElement

@@ -23,7 +23,10 @@ public enum ElementContent
     Tool,
     Gold,
     Enemy,
-    Door
+    Door,
+    BigWall,
+    SmallWall,
+    Exit
 }
 
 public class BaseElement : MonoBehaviour
@@ -90,6 +93,14 @@ public class BaseElement : MonoBehaviour
     {
     }
 
+    public void ClearShadow()
+    {
+        Transform shadow = transform.Find("Shadow");
+        if (shadow != null)
+        {
+            Destroy(shadow.gameObject);
+        }
+    }
 
     public virtual void ToNumberElement(bool needEffect = false)
     {

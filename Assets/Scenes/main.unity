@@ -285,12 +285,12 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 4bb3f6ce39c2e104cb844d039e9520a9, type: 3}
   - {fileID: 21300000, guid: 6dd78cad6da8b584da04ee31eb3beca8, type: 3}
   - {fileID: 21300000, guid: 961edd96a81dee84a89781aa0ff56e3b, type: 3}
+  - {fileID: 21300000, guid: aeb2a594b59972847a85e4867164e61e, type: 3}
   - {fileID: 21300000, guid: 14f6e29a0db29ec41866cfe3d4068e70, type: 3}
   - {fileID: 21300000, guid: 727fedc62d96b8041ac285a47651d1ea, type: 3}
   - {fileID: 21300000, guid: dda05d34ec39a644296f5ce653a011e5, type: 3}
   - {fileID: 21300000, guid: dd1a8c854be818a438da151c80543deb, type: 3}
   - {fileID: 21300000, guid: 95a73897329515347affa96393e6fe3e, type: 3}
-  - {fileID: 21300000, guid: aeb2a594b59972847a85e4867164e61e, type: 3}
   goldSprites:
   - {fileID: 21300000, guid: af98ab6ba09df8b468abc08c502a4125, type: 3}
   - {fileID: 21300000, guid: d8141469f2447a9438c098afa420ad87, type: 3}
@@ -299,8 +299,24 @@ MonoBehaviour:
   - {fileID: 21300000, guid: e4ca3da15637ef147b5adaa08136a3ba, type: 3}
   - {fileID: 21300000, guid: 0f0945ce5b63eff4bb42b6374259a2d4, type: 3}
   - {fileID: 21300000, guid: 1b86569aedf3e0045a705e5bc5816849, type: 3}
+  bigWallSprites:
+  - {fileID: 21300000, guid: f280e8d8f7930ad47b83d8d55b780da0, type: 3}
+  - {fileID: 21300000, guid: 8c5d7aec9ca09834abab61e7709e06cd, type: 3}
+  smallWallSprites:
+  - {fileID: 21300000, guid: f4fec8dfcbde35d41b0e102f9c99127d, type: 3}
+  - {fileID: 21300000, guid: 11faeb311b68a60499e5bad1bdeaf305, type: 3}
+  enemyWallSprites:
+  - {fileID: 21300000, guid: 87c80ece354510047a9eca3abf0c9751, type: 3}
+  - {fileID: 21300000, guid: 0ec69807a54e07f4290d083d9798aa8c, type: 3}
+  - {fileID: 21300000, guid: 5ae51897dc2f89d489ebd32a106d1820, type: 3}
+  - {fileID: 21300000, guid: 18faa089ff652a24890533ac1bd1d98a, type: 3}
+  - {fileID: 21300000, guid: 7443fc9ef6b03a24cb0a22781d0e0b2b, type: 3}
+  doorWallSprite: {fileID: 21300000, guid: 4efb46df9f498654a99c5ca7b0a8798c, type: 3}
+  exitSprite: {fileID: 21300000, guid: 9d3dfc6c9178f194dace73234ff87601, type: 3}
   w: 19
   h: 9
   minTrapProbability: 0.12
   maxTrapProbability: 0.18
   uncoverProbability: 0.1
+  standAreaW: 3
+  obstacleAreaW: 8

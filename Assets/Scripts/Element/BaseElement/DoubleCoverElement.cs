@@ -79,7 +79,7 @@ public class DoubleCoverElement : SingleCoverElement
         if (ElementState == ElementState.UnCovered) return;
         isHide = false;
         RemoveFlag();
-        ClearShaodow();
+        ClearShadow();
         ConfirmSprite();
     }
 

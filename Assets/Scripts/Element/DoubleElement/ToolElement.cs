@@ -4,16 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum ToolType
-{
+{//和ElementContent 对应
     Hp,
     Armor,
     Sword,
+    Map,
     Arrow,
     Key,
     Tnt,
     Hoe,
     Grass,
-    Map
 }
 
 public class ToolElement : DoubleCoverElement

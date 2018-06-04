@@ -93,12 +93,5 @@ public class SingleCoverElement : BaseElement
         }
     }
 
-    public void ClearShaodow()
-    {
-        Transform shadow = transform.Find("Shadow");
-        if(shadow!=null)
-        {
-            Destroy(shadow.gameObject);
-        }
-    }
+
 }

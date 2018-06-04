@@ -25,7 +25,7 @@ public class NumberElement : SingleCoverElement
             return;
         RemoveFlag();
         ElementState = ElementState.UnCovered;
-        ClearShaodow();
+        ClearShadow();
         if(NeedEffect)
         {
             Instantiate(MainGameManager.Instance.UncoveredEffect, transform);
