@@ -7,10 +7,10 @@ public class MainGameManager : MonoBehaviour
 {
     private struct CloseAreaInfo
     {
-        int x, y, sx, ex, sy, ey;
+        public int x, y, sx, ex, sy, ey;
         public int doorType;
         public Vector2Int doorPos;
-        public Vector2Int toolPos,goldPos;
+        public Vector2Int toolPos, goldPos;
         public ToolElement t;
         public GoldElement g;
         public int innerCount, goldNumber;
@@ -158,6 +158,30 @@ public class MainGameManager : MonoBehaviour
         SpawnNumber(avaliableIndex);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_type">0与边界闭合 1自闭和</param>
+    /// <param name="_nowArea"></param>
+    /// <param name="_closeAreaInfo"></param>
+    private CloseAreaInfo GenerateCloseAreaInfo(int _type, int _nowArea)
+    {
+        CloseAreaInfo closeAreaInfo = new CloseAreaInfo();
+        switch (_type)
+        {
+            case 0:
+                closeAreaInfo.x = UnityEngine.Random.Range(3, obstacleAreaW - 3);
+                closeAreaInfo.y = UnityEngine.Random.Range(3, h - 3);
+                closeAreaInfo.sx = standAreaW + _nowArea * obstacleAreaW + 1;
+                closeAreaInfo.ex = closeAreaInfo.sx + closeAreaInfo.x;
+                closeAreaInfo.doorType = UnityEngine.Random.Range(4, 8);
+                break;
+            case 1:
+                break;
+        }
+        return closeAreaInfo;
+    }
+
     private void SpawnExit(List<int> _avaliableIndex)
     {
         if (_avaliableIndex.Count >= 4)
@@ -177,7 +201,7 @@ public class MainGameManager : MonoBehaviour
             for (int i = 0; i < vec2.Length; i++)
             {
                 _avaliableIndex.Remove(GetIndexByPos((int)(x + vec2[i].x), (int)(y + vec2[i].y)));
-                if (i!=0)
+                if (i != 0)
                 {
                     Destroy(MapArray[(int)(x + vec2[i].x), (int)(y + vec2[i].y)].gameObject);
                     MapArray[(int)(x + vec2[i].x), (int)(y + vec2[i].y)] = exit;
@@ -188,9 +212,9 @@ public class MainGameManager : MonoBehaviour
 
     private void SpawnObstacleArea(List<int> _avaliableIndex)
     {
-        for(int i=0;i<ObstacleAreaNum;i++)
+        for (int i = 0; i < ObstacleAreaNum; i++)
         {
-            if(UnityEngine.Random.value<0.5f)
+            if (UnityEngine.Random.value < 0.5f)
             {
                 CreateCloseArea(i, _avaliableIndex);
             }
@@ -201,12 +225,54 @@ public class MainGameManager : MonoBehaviour
         }
     }
 
-    private void CreateCloseArea(int nowArea,List<int> _avaliableIndex)
+    private void CreateCloseArea(int nowArea, List<int> _avaliableIndex)
     {
         int shape = UnityEngine.Random.Range(0, 2);
+        CloseAreaInfo info;
         switch (shape)
         {
             case 0:
+                info = GenerateCloseAreaInfo(0, nowArea);
+                int dir = UnityEngine.Random.Range(0, 4);
+                switch (dir)
+                {
+                    case 0:
+                        info.doorPos = UnityEngine.Random.value < 0.5f
+                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(info.y, h));
+                        CreateULShapeAreaDoor(info, _avaliableIndex);
+                        for(int i=h-1;i>info.y;i--)
+                        {
+                            int index1 = GetIndexByPos(info.sx, i);
+                            if (_avaliableIndex.Contains(index1))
+                            {
+                                _avaliableIndex.Remove(index1);
+                                SetElement<BigWallElement>(index1); 
+                            }
+
+                            int index2 = GetIndexByPos(info.ex, i);
+                            if (_avaliableIndex.Contains(index1))
+                            {
+                                _avaliableIndex.Remove(index2);
+                                SetElement<BigWallElement>(index2);
+                            }
+                        }
+
+                        for (int i =info.sx; i <=info.ex; i++)
+                        {
+                            int index = GetIndexByPos(i, info.y);
+                            if (_avaliableIndex.Contains(index))
+                            {
+                                _avaliableIndex.Remove(index);
+                                SetElement<BigWallElement>(index);
+                            }
+                        }
+                        break;
+                    case 1: break;
+                    case 2: break;
+                    case 3: break;
+                }
+
                 break;
             case 1:
                 break;
@@ -217,6 +283,23 @@ public class MainGameManager : MonoBehaviour
     private void CreateRandomWall(int nowArea, List<int> _avaliableIndex)
     {
 
+    }
+
+    private void CreateULShapeAreaDoor(CloseAreaInfo _info, List<int> _avaliableIndex)
+    {
+        int index = GetIndexByPos(_info.doorPos.x, _info.doorPos.y);
+        _avaliableIndex.Remove(GetIndexByPos(_info.doorPos.x, _info.doorPos.y));
+        SetElement<DoorElement>(index);
+    }
+
+    private void CreateCloseAreaRewards(CloseAreaInfo _info, List<int> _avaliableIndex)
+    {
+        _info.innerCount = _info.x * _info.y;
+        _info.goldNumber = UnityEngine.Random.Range(1, UnityEngine.Random.value < 0.5f ? _info.innerCount + 1 : _info.innerCount / 2);
+        for(int i = 0;i<_info.goldNumber;i++)
+        {
+
+        }
     }
 
     private void SpawnTrap(List<int> _avaliableIndex)
