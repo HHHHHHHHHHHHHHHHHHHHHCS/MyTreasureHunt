@@ -29,6 +29,10 @@ public class ToolElement : DoubleCoverElement
         //toolType = (ToolType)UnityEngine.Random.Range(0
         //    , Enum.GetValues(typeof(ToolType)).Length);
         toolType = (ToolType)UnityEngine.Random.Range(0,9);
+        if (!isHide)
+        {
+            ConfirmSprite();
+        }
     }
 
     public override void ConfirmSprite()

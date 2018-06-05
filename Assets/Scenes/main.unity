@@ -313,10 +313,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7443fc9ef6b03a24cb0a22781d0e0b2b, type: 3}
   doorWallSprite: {fileID: 21300000, guid: 4efb46df9f498654a99c5ca7b0a8798c, type: 3}
   exitSprite: {fileID: 21300000, guid: 9d3dfc6c9178f194dace73234ff87601, type: 3}
-  w: 19
+  w: 40
   h: 9
   minTrapProbability: 0.12
   maxTrapProbability: 0.18
-  uncoverProbability: 0.1
+  uncoverProbability: 0.2
   standAreaW: 3
   obstacleAreaW: 8

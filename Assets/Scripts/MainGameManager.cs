@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class MainGameManager : MonoBehaviour
 {
@@ -100,7 +101,7 @@ public class MainGameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        ObstacleAreaNum = (w - (StandAreaW - 3)) / ObstacleAreaW;
+        ObstacleAreaNum = (w - (StandAreaW - 4)) / ObstacleAreaW;
         CreateMap();
         InitMap();
         ResetCamera();
@@ -153,6 +154,7 @@ public class MainGameManager : MonoBehaviour
             avaliableIndex.Add(i);
         }
         SpawnExit(avaliableIndex);
+        SpawnObstacleArea(avaliableIndex);
         SpawnTrap(avaliableIndex);
         SpawnTool(avaliableIndex);
         SpawnGold(avaliableIndex);
@@ -171,13 +173,20 @@ public class MainGameManager : MonoBehaviour
         switch (_type)
         {
             case 0:
-                closeAreaInfo.x = UnityEngine.Random.Range(3, obstacleAreaW - 3);
-                closeAreaInfo.y = UnityEngine.Random.Range(3, h - 3);
+                closeAreaInfo.x = Random.Range(3, obstacleAreaW - 4);
+                closeAreaInfo.y = Random.Range(3, h - 3);
                 closeAreaInfo.sx = standAreaW + _nowArea * obstacleAreaW + 1;
                 closeAreaInfo.ex = closeAreaInfo.sx + closeAreaInfo.x;
-                closeAreaInfo.doorType = UnityEngine.Random.Range(4, 8);
+                closeAreaInfo.doorType = Random.Range(4, 8);
                 break;
             case 1:
+                closeAreaInfo.x = Random.Range(3, obstacleAreaW - 4);
+                closeAreaInfo.y = Random.Range(3, closeAreaInfo.x + 1);
+                closeAreaInfo.sx = standAreaW + _nowArea * obstacleAreaW + 1;
+                closeAreaInfo.ex = closeAreaInfo.sx + closeAreaInfo.x;
+                closeAreaInfo.sy = Random.Range(3, h - closeAreaInfo.y - 1);
+                closeAreaInfo.ey = closeAreaInfo.sy + closeAreaInfo.y;
+                closeAreaInfo.doorType = (int)ElementContent.BigWall;
                 break;
         }
         return closeAreaInfo;
@@ -188,7 +197,7 @@ public class MainGameManager : MonoBehaviour
         if (_avaliableIndex.Count >= 4)
         {
             float x = w - 1.5f;
-            float y = UnityEngine.Random.Range(1, h) - 0.5f;
+            float y = Random.Range(1, h) - 0.5f;
 
             Vector2[] vec2 = new[] {new Vector2(+0.5f,-0.5f), new Vector2(+0.5f,+0.5f)
             , new Vector2(-0.5f, -0.5f) ,new Vector2(-0.5f, +0.5f)};
@@ -215,7 +224,7 @@ public class MainGameManager : MonoBehaviour
     {
         for (int i = 0; i < ObstacleAreaNum; i++)
         {
-            if (UnityEngine.Random.value < 0.5f)
+            if (Random.value < 0.5f)
             {
                 CreateCloseArea(i, _avaliableIndex);
             }
@@ -228,19 +237,19 @@ public class MainGameManager : MonoBehaviour
 
     private void CreateCloseArea(int nowArea, List<int> _avaliableIndex)
     {
-        int shape = UnityEngine.Random.Range(0, 2);
+        int shape = Random.Range(0, 2);
         CloseAreaInfo info;
         switch (shape)
         {
             case 0:
                 info = GenerateCloseAreaInfo(0, nowArea);
-                int dir = UnityEngine.Random.Range(0, 4);
+                int dir = Random.Range(0, 4);
                 switch (dir)
                 {
                     case 0:
-                        info.doorPos = UnityEngine.Random.value < 0.5f
-                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(info.y, h));
+                        info.doorPos = Random.value < 0.5f
+                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex, Random.Range(info.y, h));
                         CreateULShapeAreaDoor(info, _avaliableIndex);
                         for (int i = h - 1; i > info.y; i--)
                         {
@@ -275,9 +284,9 @@ public class MainGameManager : MonoBehaviour
                         CreateCloseAreaRewards(info, _avaliableIndex);
                         break;
                     case 1:
-                        info.doorPos = UnityEngine.Random.value < 0.5f
-                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(0, info.y));
+                        info.doorPos = Random.value < 0.5f
+                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex, Random.Range(0, info.y));
                         CreateULShapeAreaDoor(info, _avaliableIndex);
                         for (int i = 0; i < info.y; i++)
                         {
@@ -311,9 +320,9 @@ public class MainGameManager : MonoBehaviour
                         CreateCloseAreaRewards(info, _avaliableIndex);
                         break;
                     case 2:
-                        info.doorPos = UnityEngine.Random.value < 0.5f
-                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(0,info.y));
+                        info.doorPos = Random.value < 0.5f
+                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex - 1, Random.Range(info.y, info.y));
                         CreateULShapeAreaDoor(info, _avaliableIndex);
                         for (int i = h - 1; i > info.y; i--)
                         {
@@ -350,9 +359,9 @@ public class MainGameManager : MonoBehaviour
                         CreateCloseAreaRewards(info, _avaliableIndex);
                         break;
                     case 3:
-                        info.doorPos = UnityEngine.Random.value < 0.5f
-                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(info.y, h));
+                        info.doorPos = Random.value < 0.5f
+                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex, Random.Range(0, info.y));
                         CreateULShapeAreaDoor(info, _avaliableIndex);
                         for (int i = 0; i < info.y; i++)
                         {
@@ -389,9 +398,46 @@ public class MainGameManager : MonoBehaviour
                         CreateCloseAreaRewards(info, _avaliableIndex);
                         break;
                 }
-
+                CreateCloseTool(info, _avaliableIndex);
                 break;
             case 1:
+                info = GenerateCloseAreaInfo(1, nowArea);
+                for (int i = info.sx; i <= info.ex; i++)
+                {
+                    int index1 = GetIndexByPos(i, info.sy);
+                    if (_avaliableIndex.Contains(index1))
+                    {
+                        _avaliableIndex.Remove(index1);
+                        SetElement<BigWallElement>(index1);
+                    }
+
+                    int index2 = GetIndexByPos(i, info.ey);
+                    if (_avaliableIndex.Contains(index2))
+                    {
+                        _avaliableIndex.Remove(index2);
+                        SetElement<BigWallElement>(index2);
+                    }
+                }
+
+                for (int i = info.sy + 1; i < info.ey; i++)
+                {
+                    int index1 = GetIndexByPos(info.sx, i);
+                    if (_avaliableIndex.Contains(index1))
+                    {
+                        _avaliableIndex.Remove(index1);
+                        SetElement<BigWallElement>(index1);
+                    }
+
+                    int index2 = GetIndexByPos(info.ex, i);
+                    if (_avaliableIndex.Contains(index2))
+                    {
+                        _avaliableIndex.Remove(index2);
+                        SetElement<BigWallElement>(index2);
+                    }
+                }
+
+                CreateCloseTool(info, _avaliableIndex);
+                CreateCloseAreaRewards(info, _avaliableIndex);
                 break;
         }
 
@@ -399,7 +445,36 @@ public class MainGameManager : MonoBehaviour
 
     private void CreateRandomWall(int nowArea, List<int> _avaliableIndex)
     {
+        int sx = standAreaW + nowArea * obstacleAreaW + 1;
+        int ex = sx + obstacleAreaW;
+        int wx = Random.Range(sx, ex);
+        int wy = Random.Range(0, h);
 
+        List<int> tempList = new List<int>();
+        for (int tempX = sx; tempX < ex; tempX++)
+        {
+            for (int tempY = 0; tempY < h; tempY++)
+            {
+                var index = GetIndexByPos(tempX, tempY);
+                if (_avaliableIndex.Contains(index))
+                {
+                    tempList.Add(index);
+                }
+            }
+        }
+        for (int i = 0; i < 5 && tempList.Count > 0; i++)
+        {
+            int index = tempList[Random.Range(0, tempList.Count)];
+            tempList.Remove(index);
+            if (Random.value < 0.5f)
+            {
+                SetElement<SmallWallElement>(index);
+            }
+            else
+            {
+                SetElement<BigWallElement>(index);
+            }
+        }
     }
 
     private void CreateULShapeAreaDoor(CloseAreaInfo _info, List<int> _avaliableIndex)
@@ -412,7 +487,7 @@ public class MainGameManager : MonoBehaviour
     private void CreateCloseAreaRewards(CloseAreaInfo _info, List<int> _avaliableIndex)
     {
         _info.innerCount = _info.x * _info.y;
-        _info.goldNumber = UnityEngine.Random.Range(1, UnityEngine.Random.value < 0.5f ? _info.innerCount + 1 : _info.innerCount / 2);
+        _info.goldNumber = Random.Range(1, Random.value < 0.5f ? _info.innerCount + 1 : _info.innerCount / 2);
         for (int i = 0; i < _info.goldNumber; i++)
         {
             _info.gy = i / _info.x;
@@ -425,18 +500,25 @@ public class MainGameManager : MonoBehaviour
                 _avaliableIndex.Remove(index);
                 _info.g = SetElement<GoldElement>(index);
             }
-
         }
+    }
+
+    private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
+    {
+        _info.tx = Random.Range(0, _info.sx);
+        _info.ty = Random.Range(0, h);
+        int index = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
+        _info.t = SetElement<ToolElement>(index);
     }
 
     private void SpawnTrap(List<int> _avaliableIndex)
     {
-        float trapPro = UnityEngine.Random.Range(minTrapProbability, maxTrapProbability);
+        float trapPro = Random.Range(minTrapProbability, maxTrapProbability);
         int trapNum = (int)(_avaliableIndex.Count * trapPro);
 
         for (int i = 0; i < trapNum && _avaliableIndex.Count > 0; i++)
         {
-            int temp = _avaliableIndex[UnityEngine.Random.Range(0, _avaliableIndex.Count)];
+            int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
             SetElement<TrapElement>(temp);
             _avaliableIndex.Remove(temp);
         }
@@ -450,29 +532,26 @@ public class MainGameManager : MonoBehaviour
             SetElement<NumberElement>(temp);
             _avaliableIndex.Remove(temp);
         }
-
     }
 
     private void SpawnTool(List<int> _avaliableIndex)
     {
-        for (int i = 0; i < 10 && _avaliableIndex.Count > 0; i++)
+        for (int i = 0; i < 3 && _avaliableIndex.Count > 0; i++)
         {
-            int temp = _avaliableIndex[UnityEngine.Random.Range(0, _avaliableIndex.Count)];
+            int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
             SetElement<ToolElement>(temp);
             _avaliableIndex.Remove(temp);
         }
     }
     private void SpawnGold(List<int> _avaliableIndex)
     {
-        for (int i = 0; i < 10 && _avaliableIndex.Count > 0; i++)
+        for (int i = 0; i < ObstacleAreaNum * 3 && _avaliableIndex.Count > 0; i++)
         {
-            int temp = _avaliableIndex[UnityEngine.Random.Range(0, _avaliableIndex.Count)];
+            int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
             SetElement<GoldElement>(temp);
             _avaliableIndex.Remove(temp);
         }
     }
-
-
 
     private void GetPosByIndex(int index, out int x, out int y)
     {
