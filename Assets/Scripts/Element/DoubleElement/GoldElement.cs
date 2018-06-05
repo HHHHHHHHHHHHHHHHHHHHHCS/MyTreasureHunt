@@ -24,9 +24,17 @@ public class GoldElement : DoubleCoverElement
         base.OnInit();
         ElementContent = ElementContent.Gold;
 
-        goldType = (GoldType)UnityEngine.Random.Range(0
-            , Enum.GetValues(typeof(GoldType)).Length);
+        //goldType = (GoldType)UnityEngine.Random.Range(0
+        //    , Enum.GetValues(typeof(GoldType)).Length);
+        goldType = (GoldType)UnityEngine.Random.Range(0,7);
+
+        if(!isHide)
+        {
+            ConfirmSprite();
+        }
     }
+
+
 
     public override void OnUncovered()
     {

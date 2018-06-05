@@ -8,6 +8,7 @@ public class MainGameManager : MonoBehaviour
     private struct CloseAreaInfo
     {
         public int x, y, sx, ex, sy, ey;
+        public int tx, ty, gx, gy;
         public int doorType;
         public Vector2Int doorPos;
         public Vector2Int toolPos, goldPos;
@@ -241,24 +242,24 @@ public class MainGameManager : MonoBehaviour
                             ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
                             : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(info.y, h));
                         CreateULShapeAreaDoor(info, _avaliableIndex);
-                        for(int i=h-1;i>info.y;i--)
+                        for (int i = h - 1; i > info.y; i--)
                         {
                             int index1 = GetIndexByPos(info.sx, i);
                             if (_avaliableIndex.Contains(index1))
                             {
                                 _avaliableIndex.Remove(index1);
-                                SetElement<BigWallElement>(index1); 
+                                SetElement<BigWallElement>(index1);
                             }
 
                             int index2 = GetIndexByPos(info.ex, i);
-                            if (_avaliableIndex.Contains(index1))
+                            if (_avaliableIndex.Contains(index2))
                             {
                                 _avaliableIndex.Remove(index2);
                                 SetElement<BigWallElement>(index2);
                             }
                         }
 
-                        for (int i =info.sx; i <=info.ex; i++)
+                        for (int i = info.sx; i <= info.ex; i++)
                         {
                             int index = GetIndexByPos(i, info.y);
                             if (_avaliableIndex.Contains(index))
@@ -267,10 +268,126 @@ public class MainGameManager : MonoBehaviour
                                 SetElement<BigWallElement>(index);
                             }
                         }
+
+                        info.sy = info.y;
+                        info.ey = h - 1;
+                        info.y = h - 1 - info.y;
+                        CreateCloseAreaRewards(info, _avaliableIndex);
                         break;
-                    case 1: break;
-                    case 2: break;
-                    case 3: break;
+                    case 1:
+                        info.doorPos = UnityEngine.Random.value < 0.5f
+                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(0, info.y));
+                        CreateULShapeAreaDoor(info, _avaliableIndex);
+                        for (int i = 0; i < info.y; i++)
+                        {
+                            int index1 = GetIndexByPos(info.sx, i);
+                            if (_avaliableIndex.Contains(index1))
+                            {
+                                _avaliableIndex.Remove(index1);
+                                SetElement<BigWallElement>(index1);
+                            }
+
+                            int index2 = GetIndexByPos(info.ex, i);
+                            if (_avaliableIndex.Contains(index2))
+                            {
+                                _avaliableIndex.Remove(index2);
+                                SetElement<BigWallElement>(index2);
+                            }
+                        }
+
+                        for (int i = info.sx; i <= info.ex; i++)
+                        {
+                            int index = GetIndexByPos(i, info.y);
+                            if (_avaliableIndex.Contains(index))
+                            {
+                                _avaliableIndex.Remove(index);
+                                SetElement<BigWallElement>(index);
+                            }
+                        }
+
+                        info.sy = 0;
+                        info.ey = info.y;
+                        CreateCloseAreaRewards(info, _avaliableIndex);
+                        break;
+                    case 2:
+                        info.doorPos = UnityEngine.Random.value < 0.5f
+                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(0,info.y));
+                        CreateULShapeAreaDoor(info, _avaliableIndex);
+                        for (int i = h - 1; i > info.y; i--)
+                        {
+                            int index1 = GetIndexByPos(info.sx, i);
+                            if (_avaliableIndex.Contains(index1))
+                            {
+                                _avaliableIndex.Remove(index1);
+                                SetElement<BigWallElement>(index1);
+                            }
+                        }
+
+                        for (int i = 0; i < info.y; i++)
+                        {
+                            int index2 = GetIndexByPos(info.ex, i);
+                            if (_avaliableIndex.Contains(index2))
+                            {
+                                _avaliableIndex.Remove(index2);
+                                SetElement<BigWallElement>(index2);
+                            }
+                        }
+
+                        for (int i = info.sx; i <= info.ex; i++)
+                        {
+                            int index = GetIndexByPos(i, info.y);
+                            if (_avaliableIndex.Contains(index))
+                            {
+                                _avaliableIndex.Remove(index);
+                                SetElement<BigWallElement>(index);
+                            }
+                        }
+
+                        info.sy = 0;
+                        info.ey = info.y;
+                        CreateCloseAreaRewards(info, _avaliableIndex);
+                        break;
+                    case 3:
+                        info.doorPos = UnityEngine.Random.value < 0.5f
+                            ? new Vector2Int(UnityEngine.Random.Range(info.sx + 1, info.ex), info.y)
+                            : new Vector2Int(UnityEngine.Random.value < 0.5f ? info.sx : info.ex, UnityEngine.Random.Range(info.y, h));
+                        CreateULShapeAreaDoor(info, _avaliableIndex);
+                        for (int i = 0; i < info.y; i++)
+                        {
+                            int index1 = GetIndexByPos(info.sx, i);
+                            if (_avaliableIndex.Contains(index1))
+                            {
+                                _avaliableIndex.Remove(index1);
+                                SetElement<BigWallElement>(index1);
+                            }
+                        }
+
+                        for (int i = h - 1; i >= info.y; i--)
+                        {
+                            int index2 = GetIndexByPos(info.ex, i);
+                            if (_avaliableIndex.Contains(index2))
+                            {
+                                _avaliableIndex.Remove(index2);
+                                SetElement<BigWallElement>(index2);
+                            }
+                        }
+
+                        for (int i = info.sx; i <= info.ex; i++)
+                        {
+                            int index = GetIndexByPos(i, info.y);
+                            if (_avaliableIndex.Contains(index))
+                            {
+                                _avaliableIndex.Remove(index);
+                                SetElement<BigWallElement>(index);
+                            }
+                        }
+
+                        info.sy = 0;
+                        info.ey = info.y;
+                        CreateCloseAreaRewards(info, _avaliableIndex);
+                        break;
                 }
 
                 break;
@@ -296,8 +413,18 @@ public class MainGameManager : MonoBehaviour
     {
         _info.innerCount = _info.x * _info.y;
         _info.goldNumber = UnityEngine.Random.Range(1, UnityEngine.Random.value < 0.5f ? _info.innerCount + 1 : _info.innerCount / 2);
-        for(int i = 0;i<_info.goldNumber;i++)
+        for (int i = 0; i < _info.goldNumber; i++)
         {
+            _info.gy = i / _info.x;
+            _info.gx = i - _info.gy * _info.x;
+            _info.gx += _info.sx + 1;
+            _info.gy += _info.sy + 1;
+            int index = GetIndexByPos(_info.gx, _info.gy);
+            if (_avaliableIndex.Contains(index))
+            {
+                _avaliableIndex.Remove(index);
+                _info.g = SetElement<GoldElement>(index);
+            }
 
         }
     }

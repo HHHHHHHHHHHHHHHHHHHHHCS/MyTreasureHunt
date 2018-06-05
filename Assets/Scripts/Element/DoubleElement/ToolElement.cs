@@ -26,9 +26,9 @@ public class ToolElement : DoubleCoverElement
         base.OnInit();
         ElementContent = ElementContent.Tool;
 
-        toolType = (ToolType)UnityEngine.Random.Range(0
-            , Enum.GetValues(typeof(ToolType)).Length);
-
+        //toolType = (ToolType)UnityEngine.Random.Range(0
+        //    , Enum.GetValues(typeof(ToolType)).Length);
+        toolType = (ToolType)UnityEngine.Random.Range(0,9);
     }
 
     public override void ConfirmSprite()
