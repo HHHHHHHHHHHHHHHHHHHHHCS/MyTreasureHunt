@@ -35,6 +35,15 @@ public class ToolElement : DoubleCoverElement
         }
     }
 
+    public void ResetKeyTool()
+    {
+        toolType = ToolType.Key;
+        if (!isHide)
+        {
+            ConfirmSprite();
+        }
+    }
+
     public override void ConfirmSprite()
     {
         LoadSprite(MainGameManager.Instance.ToolSprites[(int)toolType]);

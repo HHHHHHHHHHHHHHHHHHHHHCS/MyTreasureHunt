@@ -319,4 +319,6 @@ MonoBehaviour:
   maxTrapProbability: 0.18
   uncoverProbability: 0.2
   standAreaW: 3
-  obstacleAreaW: 8
+  obstacleAreaW: 6
+  obstacleProbability: 0.5
+  rewardMaxNumber: 5

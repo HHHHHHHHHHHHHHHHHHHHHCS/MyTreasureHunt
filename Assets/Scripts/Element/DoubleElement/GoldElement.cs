@@ -51,4 +51,5 @@ public class GoldElement : DoubleCoverElement
         Instantiate(MainGameManager.Instance.GoldEffect, transform).name = "GoldEffect";
         LoadSprite(MainGameManager.Instance.GoldSprites[(int)goldType]);
     }
+
 }

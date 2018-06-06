@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class MainGameManager : MonoBehaviour
 {
+    /*
     private struct CloseAreaInfo
     {
         public int x, y, sx, ex, sy, ey;
@@ -17,7 +18,7 @@ public class MainGameManager : MonoBehaviour
         public GoldElement g;
         public int innerCount, goldNumber;
     }
-
+    */
 
     public static MainGameManager Instance { get; private set; }
 
@@ -87,21 +88,28 @@ public class MainGameManager : MonoBehaviour
     [SerializeField]
     private float uncoverProbability;
     public float UncoverProbability { get { return uncoverProbability; } }
+    //[SerializeField]
+    //private int standAreaW;
+    //public float StandAreaW { get { return standAreaW; } }
+    //[SerializeField]
+    //private int obstacleAreaW;
+    //public int ObstacleAreaW { get { return obstacleAreaW; } }
+    //public float ObstacleAreaNum { get; private set; }
     [SerializeField]
     private int standAreaW;
-    public float StandAreaW { get { return standAreaW; } }
     [SerializeField]
     private int obstacleAreaW;
-    public int ObstacleAreaW { get { return obstacleAreaW; } }
-    public float ObstacleAreaNum { get; private set; }
-
+    [SerializeField]
+    private float obstacleProbability;
+    [SerializeField]
+    private int rewardMaxNumber;
+    private int obstacleAreaNum;
 
     public BaseElement[,] MapArray { get; private set; }
 
     private void Awake()
     {
         Instance = this;
-        ObstacleAreaNum = (w - (StandAreaW - 4)) / ObstacleAreaW;
         CreateMap();
         InitMap();
         ResetCamera();
@@ -161,36 +169,7 @@ public class MainGameManager : MonoBehaviour
         SpawnNumber(avaliableIndex);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="_type">0与边界闭合 1自闭和</param>
-    /// <param name="_nowArea"></param>
-    /// <param name="_closeAreaInfo"></param>
-    private CloseAreaInfo GenerateCloseAreaInfo(int _type, int _nowArea)
-    {
-        CloseAreaInfo closeAreaInfo = new CloseAreaInfo();
-        switch (_type)
-        {
-            case 0:
-                closeAreaInfo.x = Random.Range(3, obstacleAreaW - 4);
-                closeAreaInfo.y = Random.Range(3, h - 3);
-                closeAreaInfo.sx = standAreaW + _nowArea * obstacleAreaW + 1;
-                closeAreaInfo.ex = closeAreaInfo.sx + closeAreaInfo.x;
-                closeAreaInfo.doorType = Random.Range(4, 8);
-                break;
-            case 1:
-                closeAreaInfo.x = Random.Range(3, obstacleAreaW - 4);
-                closeAreaInfo.y = Random.Range(3, closeAreaInfo.x + 1);
-                closeAreaInfo.sx = standAreaW + _nowArea * obstacleAreaW + 1;
-                closeAreaInfo.ex = closeAreaInfo.sx + closeAreaInfo.x;
-                closeAreaInfo.sy = Random.Range(3, h - closeAreaInfo.y - 1);
-                closeAreaInfo.ey = closeAreaInfo.sy + closeAreaInfo.y;
-                closeAreaInfo.doorType = (int)ElementContent.BigWall;
-                break;
-        }
-        return closeAreaInfo;
-    }
+
 
     private void SpawnExit(List<int> _avaliableIndex)
     {
@@ -222,295 +201,446 @@ public class MainGameManager : MonoBehaviour
 
     private void SpawnObstacleArea(List<int> _avaliableIndex)
     {
-        for (int i = 0; i < ObstacleAreaNum; i++)
+        obstacleAreaNum = (w - (standAreaW + standAreaW)) / obstacleAreaW;
+        for (int i = 0; i < obstacleAreaNum; i++)
         {
-            if (Random.value < 0.5f)
+            if (Random.value < obstacleProbability)
             {
-                CreateCloseArea(i, _avaliableIndex);
-            }
-            else
-            {
-                CreateRandomWall(i, _avaliableIndex);
-            }
-        }
-    }
-
-    private void CreateCloseArea(int nowArea, List<int> _avaliableIndex)
-    {
-        int shape = Random.Range(0, 2);
-        CloseAreaInfo info;
-        switch (shape)
-        {
-            case 0:
-                info = GenerateCloseAreaInfo(0, nowArea);
-                int dir = Random.Range(0, 4);
-                switch (dir)
-                {
-                    case 0:
-                        info.doorPos = Random.value < 0.5f
-                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex, Random.Range(info.y, h));
-                        CreateULShapeAreaDoor(info, _avaliableIndex);
-                        for (int i = h - 1; i > info.y; i--)
-                        {
-                            int index1 = GetIndexByPos(info.sx, i);
-                            if (_avaliableIndex.Contains(index1))
-                            {
-                                _avaliableIndex.Remove(index1);
-                                SetElement<BigWallElement>(index1);
-                            }
-
-                            int index2 = GetIndexByPos(info.ex, i);
-                            if (_avaliableIndex.Contains(index2))
-                            {
-                                _avaliableIndex.Remove(index2);
-                                SetElement<BigWallElement>(index2);
-                            }
-                        }
-
-                        for (int i = info.sx; i <= info.ex; i++)
-                        {
-                            int index = GetIndexByPos(i, info.y);
-                            if (_avaliableIndex.Contains(index))
-                            {
-                                _avaliableIndex.Remove(index);
-                                SetElement<BigWallElement>(index);
-                            }
-                        }
-
-                        info.sy = info.y;
-                        info.ey = h - 1;
-                        info.y = h - 1 - info.y;
-                        CreateCloseAreaRewards(info, _avaliableIndex);
-                        break;
-                    case 1:
-                        info.doorPos = Random.value < 0.5f
-                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex, Random.Range(0, info.y));
-                        CreateULShapeAreaDoor(info, _avaliableIndex);
-                        for (int i = 0; i < info.y; i++)
-                        {
-                            int index1 = GetIndexByPos(info.sx, i);
-                            if (_avaliableIndex.Contains(index1))
-                            {
-                                _avaliableIndex.Remove(index1);
-                                SetElement<BigWallElement>(index1);
-                            }
-
-                            int index2 = GetIndexByPos(info.ex, i);
-                            if (_avaliableIndex.Contains(index2))
-                            {
-                                _avaliableIndex.Remove(index2);
-                                SetElement<BigWallElement>(index2);
-                            }
-                        }
-
-                        for (int i = info.sx; i <= info.ex; i++)
-                        {
-                            int index = GetIndexByPos(i, info.y);
-                            if (_avaliableIndex.Contains(index))
-                            {
-                                _avaliableIndex.Remove(index);
-                                SetElement<BigWallElement>(index);
-                            }
-                        }
-
-                        info.sy = 0;
-                        info.ey = info.y;
-                        CreateCloseAreaRewards(info, _avaliableIndex);
-                        break;
-                    case 2:
-                        info.doorPos = Random.value < 0.5f
-                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex - 1, Random.Range(info.y, info.y));
-                        CreateULShapeAreaDoor(info, _avaliableIndex);
-                        for (int i = h - 1; i > info.y; i--)
-                        {
-                            int index1 = GetIndexByPos(info.sx, i);
-                            if (_avaliableIndex.Contains(index1))
-                            {
-                                _avaliableIndex.Remove(index1);
-                                SetElement<BigWallElement>(index1);
-                            }
-                        }
-
-                        for (int i = 0; i < info.y; i++)
-                        {
-                            int index2 = GetIndexByPos(info.ex, i);
-                            if (_avaliableIndex.Contains(index2))
-                            {
-                                _avaliableIndex.Remove(index2);
-                                SetElement<BigWallElement>(index2);
-                            }
-                        }
-
-                        for (int i = info.sx; i <= info.ex; i++)
-                        {
-                            int index = GetIndexByPos(i, info.y);
-                            if (_avaliableIndex.Contains(index))
-                            {
-                                _avaliableIndex.Remove(index);
-                                SetElement<BigWallElement>(index);
-                            }
-                        }
-
-                        info.sy = 0;
-                        info.ey = info.y;
-                        CreateCloseAreaRewards(info, _avaliableIndex);
-                        break;
-                    case 3:
-                        info.doorPos = Random.value < 0.5f
-                            ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
-                            : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex, Random.Range(0, info.y));
-                        CreateULShapeAreaDoor(info, _avaliableIndex);
-                        for (int i = 0; i < info.y; i++)
-                        {
-                            int index1 = GetIndexByPos(info.sx, i);
-                            if (_avaliableIndex.Contains(index1))
-                            {
-                                _avaliableIndex.Remove(index1);
-                                SetElement<BigWallElement>(index1);
-                            }
-                        }
-
-                        for (int i = h - 1; i >= info.y; i--)
-                        {
-                            int index2 = GetIndexByPos(info.ex, i);
-                            if (_avaliableIndex.Contains(index2))
-                            {
-                                _avaliableIndex.Remove(index2);
-                                SetElement<BigWallElement>(index2);
-                            }
-                        }
-
-                        for (int i = info.sx; i <= info.ex; i++)
-                        {
-                            int index = GetIndexByPos(i, info.y);
-                            if (_avaliableIndex.Contains(index))
-                            {
-                                _avaliableIndex.Remove(index);
-                                SetElement<BigWallElement>(index);
-                            }
-                        }
-
-                        info.sy = 0;
-                        info.ey = info.y;
-                        CreateCloseAreaRewards(info, _avaliableIndex);
-                        break;
-                }
-                CreateCloseTool(info, _avaliableIndex);
-                break;
-            case 1:
-                info = GenerateCloseAreaInfo(1, nowArea);
-                for (int i = info.sx; i <= info.ex; i++)
-                {
-                    int index1 = GetIndexByPos(i, info.sy);
-                    if (_avaliableIndex.Contains(index1))
-                    {
-                        _avaliableIndex.Remove(index1);
-                        SetElement<BigWallElement>(index1);
-                    }
-
-                    int index2 = GetIndexByPos(i, info.ey);
-                    if (_avaliableIndex.Contains(index2))
-                    {
-                        _avaliableIndex.Remove(index2);
-                        SetElement<BigWallElement>(index2);
-                    }
-                }
-
-                for (int i = info.sy + 1; i < info.ey; i++)
-                {
-                    int index1 = GetIndexByPos(info.sx, i);
-                    if (_avaliableIndex.Contains(index1))
-                    {
-                        _avaliableIndex.Remove(index1);
-                        SetElement<BigWallElement>(index1);
-                    }
-
-                    int index2 = GetIndexByPos(info.ex, i);
-                    if (_avaliableIndex.Contains(index2))
-                    {
-                        _avaliableIndex.Remove(index2);
-                        SetElement<BigWallElement>(index2);
-                    }
-                }
-
-                CreateCloseTool(info, _avaliableIndex);
-                CreateCloseAreaRewards(info, _avaliableIndex);
-                break;
-        }
-
-    }
-
-    private void CreateRandomWall(int nowArea, List<int> _avaliableIndex)
-    {
-        int sx = standAreaW + nowArea * obstacleAreaW + 1;
-        int ex = sx + obstacleAreaW;
-        int wx = Random.Range(sx, ex);
-        int wy = Random.Range(0, h);
-
-        List<int> tempList = new List<int>();
-        for (int tempX = sx; tempX < ex; tempX++)
-        {
-            for (int tempY = 0; tempY < h; tempY++)
-            {
-                var index = GetIndexByPos(tempX, tempY);
-                if (_avaliableIndex.Contains(index))
-                {
-                    tempList.Add(index);
-                }
-            }
-        }
-        for (int i = 0; i < 5 && tempList.Count > 0; i++)
-        {
-            int index = tempList[Random.Range(0, tempList.Count)];
-            tempList.Remove(index);
-            if (Random.value < 0.5f)
-            {
-                SetElement<SmallWallElement>(index);
-            }
-            else
-            {
-                SetElement<BigWallElement>(index);
+                int x = CreateObstacle(i, _avaliableIndex);
+                CreateTool(i, _avaliableIndex);
+                CreaterReward(x, i, _avaliableIndex);
             }
         }
     }
 
-    private void CreateULShapeAreaDoor(CloseAreaInfo _info, List<int> _avaliableIndex)
+    private int CreateObstacle(int area, List<int> _avaliableIndex)
     {
-        int index = GetIndexByPos(_info.doorPos.x, _info.doorPos.y);
-        _avaliableIndex.Remove(GetIndexByPos(_info.doorPos.x, _info.doorPos.y));
-        SetElement<DoorElement>(index);
-    }
-
-    private void CreateCloseAreaRewards(CloseAreaInfo _info, List<int> _avaliableIndex)
-    {
-        _info.innerCount = _info.x * _info.y;
-        _info.goldNumber = Random.Range(1, Random.value < 0.5f ? _info.innerCount + 1 : _info.innerCount / 2);
-        for (int i = 0; i < _info.goldNumber; i++)
+        int sx = standAreaW + area * obstacleAreaW;
+        int ex = sx + obstacleAreaW - 1;
+        int x = Random.Range(sx, ex);
+        int y = Random.Range(0, h);
+        SetElement<DoorElement>(x, y);
+        _avaliableIndex.Remove(GetIndexByPos(x, y));
+        for (int j = 0; j < h; j++)
         {
-            _info.gy = i / _info.x;
-            _info.gx = i - _info.gy * _info.x;
-            _info.gx += _info.sx + 1;
-            _info.gy += _info.sy + 1;
-            int index = GetIndexByPos(_info.gx, _info.gy);
+            var index = GetIndexByPos(x, j);
             if (_avaliableIndex.Contains(index))
             {
+                SetElement<BigWallElement>(x, j);
                 _avaliableIndex.Remove(index);
-                _info.g = SetElement<GoldElement>(index);
+            }
+        }
+        return x;
+    }
+
+    private void CreateTool(int _area, List<int> _avaliableIndex)
+    {
+        int sx, ex;
+        _area -= 1;
+        if (_area < 0)
+        {
+            sx = 0;
+            ex = standAreaW - 1;
+        }
+        else
+        {
+            sx = standAreaW + _area * obstacleAreaW;
+            ex = sx + obstacleAreaW - 1;
+        }
+
+        int index = -1;
+        for (int i = 0; i < 10; i++)
+        {
+            int ranX = Random.Range(sx, ex + 1);
+            int ranY = Random.Range(0, h);
+            int tempIndex = GetIndexByPos(ranX, ranY);
+            if (_avaliableIndex.Contains(tempIndex))
+            {
+                index = tempIndex;
+                break;
+            }
+        }
+
+        if (index < 0)
+        {
+            List<int> randomList = new List<int>();
+            for (int y = 0; y < h; y++)
+            {
+                for (int x = sx; x < ex; x++)
+                {
+                    int tempIndex = GetIndexByPos(x, y);
+                    if (_avaliableIndex.Contains(tempIndex))
+                    {
+                        randomList.Add(tempIndex);
+                    }
+                }
+            }
+            if (randomList.Count <= 0)
+            {
+                CreateTool(_area, _avaliableIndex);
+                return;
+            }
+            else
+            {
+                index = randomList[Random.Range(0, randomList.Count)];
+            }
+        }
+
+        if (index >= 0)
+        {
+            _avaliableIndex.Remove(index);
+            var tool = SetElement<ToolElement>(index);
+            tool.ResetKeyTool();
+        }
+
+    }
+
+    private void CreaterReward(int x, int _area, List<int> _avaliableIndex)
+    {
+        int sx = x;
+        int ex = standAreaW + _area * obstacleAreaW + obstacleAreaW - 1;
+        int rewardNumber = Random.Range(0, rewardMaxNumber);
+        for (int i = 0; i < rewardNumber; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                int ranX = Random.Range(sx, ex + 1);
+                int ranY = Random.Range(0, h);
+                int index = GetIndexByPos(ranX, ranY);
+                if (_avaliableIndex.Contains(index))
+                {
+                    _avaliableIndex.Remove(index);
+                    SetElement<GoldElement>(index);
+                    break;
+                }
             }
         }
     }
 
-    private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
+    /*
+/// <summary>
+/// 
+/// </summary>
+/// <param name="_type">0与边界闭合 1自闭和</param>
+/// <param name="_nowArea"></param>
+/// <param name="_closeAreaInfo"></param>
+private CloseAreaInfo GenerateCloseAreaInfo(int _type, int _nowArea)
+{
+    CloseAreaInfo closeAreaInfo = new CloseAreaInfo();
+    switch (_type)
     {
-        _info.tx = Random.Range(0, _info.sx);
-        _info.ty = Random.Range(0, h);
-        int index = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
-        _info.t = SetElement<ToolElement>(index);
+        case 0:
+            closeAreaInfo.x = Random.Range(3, obstacleAreaW - 4);
+            closeAreaInfo.y = Random.Range(3, h - 3);
+            closeAreaInfo.sx = standAreaW + _nowArea * obstacleAreaW + 1;
+            closeAreaInfo.ex = closeAreaInfo.sx + closeAreaInfo.x;
+            closeAreaInfo.doorType = Random.Range(4, 8);
+            break;
+        case 1:
+            closeAreaInfo.x = Random.Range(3, obstacleAreaW - 4);
+            closeAreaInfo.y = Random.Range(3, closeAreaInfo.x + 1);
+            closeAreaInfo.sx = standAreaW + _nowArea * obstacleAreaW + 1;
+            closeAreaInfo.ex = closeAreaInfo.sx + closeAreaInfo.x;
+            closeAreaInfo.sy = Random.Range(3, h - closeAreaInfo.y - 1);
+            closeAreaInfo.ey = closeAreaInfo.sy + closeAreaInfo.y;
+            closeAreaInfo.doorType = (int)ElementContent.BigWall;
+            break;
+    }
+    return closeAreaInfo;
+}
+
+private void SpawnObstacleArea(List<int> _avaliableIndex)
+{
+    for (int i = 0; i < ObstacleAreaNum; i++)
+    {
+        if (Random.value < 0.5f)
+        {
+            CreateCloseArea(i, _avaliableIndex);
+        }
+        else
+        {
+            CreateRandomWall(i, _avaliableIndex);
+        }
+    }
+}
+
+
+private void CreateCloseArea(int nowArea, List<int> _avaliableIndex)
+{
+    int shape = Random.Range(0, 2);
+    CloseAreaInfo info;
+    switch (shape)
+    {
+        case 0:
+            info = GenerateCloseAreaInfo(0, nowArea);
+            int dir = Random.Range(0, 4);
+            switch (dir)
+            {
+                case 0:
+                    info.doorPos = Random.value < 0.5f
+                        ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                        : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex, Random.Range(info.y, h));
+                    CreateULShapeAreaDoor(info, _avaliableIndex);
+                    for (int i = h - 1; i > info.y; i--)
+                    {
+                        int index1 = GetIndexByPos(info.sx, i);
+                        if (_avaliableIndex.Contains(index1))
+                        {
+                            _avaliableIndex.Remove(index1);
+                            SetElement<BigWallElement>(index1);
+                        }
+
+                        int index2 = GetIndexByPos(info.ex, i);
+                        if (_avaliableIndex.Contains(index2))
+                        {
+                            _avaliableIndex.Remove(index2);
+                            SetElement<BigWallElement>(index2);
+                        }
+                    }
+
+                    for (int i = info.sx; i <= info.ex; i++)
+                    {
+                        int index = GetIndexByPos(i, info.y);
+                        if (_avaliableIndex.Contains(index))
+                        {
+                            _avaliableIndex.Remove(index);
+                            SetElement<BigWallElement>(index);
+                        }
+                    }
+
+                    info.sy = info.y;
+                    info.ey = h - 1;
+                    info.y = h - 1 - info.y;
+                    CreateCloseAreaRewards(info, _avaliableIndex);
+                    break;
+                case 1:
+                    info.doorPos = Random.value < 0.5f
+                        ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                        : new Vector2Int( info.sx , Random.Range(0, info.y));
+                    CreateULShapeAreaDoor(info, _avaliableIndex);
+                    for (int i = 0; i < info.y; i++)
+                    {
+                        int index1 = GetIndexByPos(info.sx, i);
+                        if (_avaliableIndex.Contains(index1))
+                        {
+                            _avaliableIndex.Remove(index1);
+                            SetElement<BigWallElement>(index1);
+                        }
+
+                        int index2 = GetIndexByPos(info.ex, i);
+                        if (_avaliableIndex.Contains(index2))
+                        {
+                            _avaliableIndex.Remove(index2);
+                            SetElement<BigWallElement>(index2);
+                        }
+                    }
+
+                    for (int i = info.sx; i <= info.ex; i++)
+                    {
+                        int index = GetIndexByPos(i, info.y);
+                        if (_avaliableIndex.Contains(index))
+                        {
+                            _avaliableIndex.Remove(index);
+                            SetElement<BigWallElement>(index);
+                        }
+                    }
+
+                    info.sy = 0;
+                    info.ey = info.y;
+                    CreateCloseAreaRewards(info, _avaliableIndex);
+                    break;
+                case 2:
+                    info.doorPos = Random.value < 0.5f
+                        ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                        : new Vector2Int(Random.value < 0.5f ? info.sx : info.ex - 1, Random.Range(info.y, h));
+                    CreateULShapeAreaDoor(info, _avaliableIndex);
+                    for (int i = h - 1; i > info.y; i--)
+                    {
+                        int index1 = GetIndexByPos(info.sx, i);
+                        if (_avaliableIndex.Contains(index1))
+                        {
+                            _avaliableIndex.Remove(index1);
+                            SetElement<BigWallElement>(index1);
+                        }
+                    }
+
+                    for (int i = 0; i < info.y; i++)
+                    {
+                        int index2 = GetIndexByPos(info.ex, i);
+                        if (_avaliableIndex.Contains(index2))
+                        {
+                            _avaliableIndex.Remove(index2);
+                            SetElement<BigWallElement>(index2);
+                        }
+                    }
+
+                    for (int i = info.sx; i <= info.ex; i++)
+                    {
+                        int index = GetIndexByPos(i, info.y);
+                        if (_avaliableIndex.Contains(index))
+                        {
+                            _avaliableIndex.Remove(index);
+                            SetElement<BigWallElement>(index);
+                        }
+                    }
+
+                    info.sy = 0;
+                    info.ey = info.y;
+                    CreateCloseAreaRewards(info, _avaliableIndex);
+                    break;
+                case 3:
+                    info.doorPos = Random.value < 0.5f
+                        ? new Vector2Int(Random.Range(info.sx + 1, info.ex), info.y)
+                        : new Vector2Int(info.sx , Random.Range(0, info.y));
+                    CreateULShapeAreaDoor(info, _avaliableIndex);
+                    for (int i = 0; i < info.y; i++)
+                    {
+                        int index1 = GetIndexByPos(info.sx, i);
+                        if (_avaliableIndex.Contains(index1))
+                        {
+                            _avaliableIndex.Remove(index1);
+                            SetElement<BigWallElement>(index1);
+                        }
+                    }
+
+                    for (int i = h - 1; i >= info.y; i--)
+                    {
+                        int index2 = GetIndexByPos(info.ex, i);
+                        if (_avaliableIndex.Contains(index2))
+                        {
+                            _avaliableIndex.Remove(index2);
+                            SetElement<BigWallElement>(index2);
+                        }
+                    }
+
+                    for (int i = info.sx; i <= info.ex; i++)
+                    {
+                        int index = GetIndexByPos(i, info.y);
+                        if (_avaliableIndex.Contains(index))
+                        {
+                            _avaliableIndex.Remove(index);
+                            SetElement<BigWallElement>(index);
+                        }
+                    }
+
+                    info.sy = 0;
+                    info.ey = info.y;
+                    CreateCloseAreaRewards(info, _avaliableIndex);
+                    break;
+            }
+            CreateCloseTool(info, _avaliableIndex);
+            break;
+        case 1:
+            info = GenerateCloseAreaInfo(1, nowArea);
+            for (int i = info.sx; i <= info.ex; i++)
+            {
+                int index1 = GetIndexByPos(i, info.sy);
+                if (_avaliableIndex.Contains(index1))
+                {
+                    _avaliableIndex.Remove(index1);
+                    SetElement<BigWallElement>(index1);
+                }
+
+                int index2 = GetIndexByPos(i, info.ey);
+                if (_avaliableIndex.Contains(index2))
+                {
+                    _avaliableIndex.Remove(index2);
+                    SetElement<BigWallElement>(index2);
+                }
+            }
+
+            for (int i = info.sy + 1; i < info.ey; i++)
+            {
+                int index1 = GetIndexByPos(info.sx, i);
+                if (_avaliableIndex.Contains(index1))
+                {
+                    _avaliableIndex.Remove(index1);
+                    SetElement<BigWallElement>(index1);
+                }
+
+                int index2 = GetIndexByPos(info.ex, i);
+                if (_avaliableIndex.Contains(index2))
+                {
+                    _avaliableIndex.Remove(index2);
+                    SetElement<BigWallElement>(index2);
+                }
+            }
+
+            CreateCloseTool(info, _avaliableIndex);
+            CreateCloseAreaRewards(info, _avaliableIndex);
+            break;
     }
 
+}
+
+private void CreateRandomWall(int nowArea, List<int> _avaliableIndex)
+{
+    int sx = standAreaW + nowArea * obstacleAreaW + 1;
+    int ex = sx + obstacleAreaW;
+    int wx = Random.Range(sx, ex);
+    int wy = Random.Range(0, h);
+
+    List<int> tempList = new List<int>();
+    for (int tempX = sx; tempX < ex; tempX++)
+    {
+        for (int tempY = 0; tempY < h; tempY++)
+        {
+            var index = GetIndexByPos(tempX, tempY);
+            if (_avaliableIndex.Contains(index))
+            {
+                tempList.Add(index);
+            }
+        }
+    }
+    for (int i = 0; i < 5 && tempList.Count > 0; i++)
+    {
+        int index = tempList[Random.Range(0, tempList.Count)];
+        tempList.Remove(index);
+        if (Random.value < 0.5f)
+        {
+            SetElement<SmallWallElement>(index);
+        }
+        else
+        {
+            SetElement<BigWallElement>(index);
+        }
+    }
+}
+
+private void CreateULShapeAreaDoor(CloseAreaInfo _info, List<int> _avaliableIndex)
+{
+    int index = GetIndexByPos(_info.doorPos.x, _info.doorPos.y);
+    _avaliableIndex.Remove(GetIndexByPos(_info.doorPos.x, _info.doorPos.y));
+    SetElement<DoorElement>(index);
+}
+
+private void CreateCloseAreaRewards(CloseAreaInfo _info, List<int> _avaliableIndex)
+{
+    _info.innerCount = _info.x * _info.y;
+    _info.goldNumber = Random.Range(1, Random.value < 0.5f ? _info.innerCount + 1 : _info.innerCount / 2);
+    for (int i = 0; i < _info.goldNumber; i++)
+    {
+        _info.gy = i / _info.x;
+        _info.gx = i - _info.gy * _info.x;
+        _info.gx += _info.sx + 1;
+        _info.gy += _info.sy + 1;
+        int index = GetIndexByPos(_info.gx, _info.gy);
+        if (_avaliableIndex.Contains(index))
+        {
+            _avaliableIndex.Remove(index);
+            _info.g = SetElement<GoldElement>(index);
+        }
+    }
+}
+
+private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
+{
+    _info.tx = Random.Range(0, _info.sx);
+    _info.ty = Random.Range(0, h);
+    int index = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
+    _info.t = SetElement<ToolElement>(index);
+}
+*/
     private void SpawnTrap(List<int> _avaliableIndex)
     {
         float trapPro = Random.Range(minTrapProbability, maxTrapProbability);
@@ -545,7 +675,7 @@ public class MainGameManager : MonoBehaviour
     }
     private void SpawnGold(List<int> _avaliableIndex)
     {
-        for (int i = 0; i < ObstacleAreaNum * 3 && _avaliableIndex.Count > 0; i++)
+        for (int i = 0; i < obstacleAreaNum * 2 && _avaliableIndex.Count > 0; i++)
         {
             int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
             SetElement<GoldElement>(temp);
