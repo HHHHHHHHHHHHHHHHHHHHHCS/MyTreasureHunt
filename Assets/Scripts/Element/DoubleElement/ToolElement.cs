@@ -28,16 +28,16 @@ public class ToolElement : DoubleCoverElement
 
         //toolType = (ToolType)UnityEngine.Random.Range(0
         //    , Enum.GetValues(typeof(ToolType)).Length);
-        toolType = (ToolType)UnityEngine.Random.Range(0,9);
+        toolType = (ToolType)UnityEngine.Random.Range(0,4);
         if (!isHide)
         {
             ConfirmSprite();
         }
     }
 
-    public void ResetKeyTool()
+    public void ReOnInit(ToolType _toolType)
     {
-        toolType = ToolType.Key;
+        toolType = _toolType;
         if (!isHide)
         {
             ConfirmSprite();

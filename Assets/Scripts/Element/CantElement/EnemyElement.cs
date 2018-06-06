@@ -9,7 +9,7 @@ public class EnemyElement : CantCoveredElement
         base.OnInit();
         ElementContent = ElementContent.BigWall;
         ClearShadow();
-        LoadSprite(MainGameManager.Instance.SmallWallSprites[
-            Random.Range(0, MainGameManager.Instance.SmallWallSprites.Length)]);
+        LoadSprite(MainGameManager.Instance.EnemyWallSprites[
+            Random.Range(0, MainGameManager.Instance.EnemyWallSprites.Length)]);
     }
 }

@@ -161,15 +161,46 @@ public class MainGameManager : MonoBehaviour
         {
             avaliableIndex.Add(i);
         }
+
+        int standAreaY = GenerateStandArea();
         SpawnExit(avaliableIndex);
         SpawnObstacleArea(avaliableIndex);
-        SpawnTrap(avaliableIndex);
+        SpawnTrap(standAreaY, avaliableIndex);
         SpawnTool(avaliableIndex);
         SpawnGold(avaliableIndex);
         SpawnNumber(avaliableIndex);
+        SpawnStandArea(standAreaY, avaliableIndex);
     }
 
+    private int GenerateStandArea()
+    {
+        return Random.Range(1, h - 1);
+    }
 
+    private int SpawnStandArea(int standAreaY, List<int> _avaliableIndex)
+    {
+        for (int x = 0; x < standAreaW; x++)
+        {
+            for (int y = standAreaY - 1; y <= standAreaY + 1; y++)
+            {
+                (MapArray[x, y] as SingleCoverElement).UncoveredElementSingle();
+            }
+        }
+        return standAreaY;
+    }
+
+    private int SpawnStandArea(List<int> _avaliableIndex)
+    {
+        int standAreaY = Random.Range(1, h - 1);
+        for (int x = 0; x < standAreaW; x++)
+        {
+            for (int y = standAreaY - 1; y <= standAreaY + 1; y++)
+            {
+                (MapArray[x, y] as SingleCoverElement).UncoveredElement();
+            }
+        }
+        return standAreaY;
+    }
 
     private void SpawnExit(List<int> _avaliableIndex)
     {
@@ -206,20 +237,36 @@ public class MainGameManager : MonoBehaviour
         {
             if (Random.value < obstacleProbability)
             {
-                int x = CreateObstacle(i, _avaliableIndex);
-                CreateTool(i, _avaliableIndex);
+                ElementContent elementContent;
+                int x = CreateObstacle(i, _avaliableIndex, out elementContent);
+                CreateTool(i, _avaliableIndex, elementContent);
                 CreaterReward(x, i, _avaliableIndex);
             }
         }
     }
 
-    private int CreateObstacle(int area, List<int> _avaliableIndex)
+    private int CreateObstacle(int area, List<int> _avaliableIndex, out ElementContent obstacleType)
     {
         int sx = standAreaW + area * obstacleAreaW;
         int ex = sx + obstacleAreaW - 1;
         int x = Random.Range(sx, ex);
         int y = Random.Range(0, h);
-        SetElement<DoorElement>(x, y);
+        obstacleType = (ElementContent)Random.Range(4, 8);
+        switch (obstacleType)
+        {
+            case ElementContent.Enemy:
+                SetElement<EnemyElement>(x, y);
+                break;
+            case ElementContent.Door:
+                SetElement<DoorElement>(x, y);
+                break;
+            case ElementContent.BigWall:
+                SetElement<BigWallElement>(x, y);
+                break;
+            case ElementContent.SmallWall:
+                SetElement<SmallWallElement>(x, y);
+                break;
+        }
         _avaliableIndex.Remove(GetIndexByPos(x, y));
         for (int j = 0; j < h; j++)
         {
@@ -233,7 +280,7 @@ public class MainGameManager : MonoBehaviour
         return x;
     }
 
-    private void CreateTool(int _area, List<int> _avaliableIndex)
+    private void CreateTool(int _area, List<int> _avaliableIndex, ElementContent _elementContent)
     {
         int sx, ex;
         _area -= 1;
@@ -277,7 +324,7 @@ public class MainGameManager : MonoBehaviour
             }
             if (randomList.Count <= 0)
             {
-                CreateTool(_area, _avaliableIndex);
+                CreateTool(_area, _avaliableIndex, _elementContent);
                 return;
             }
             else
@@ -289,8 +336,9 @@ public class MainGameManager : MonoBehaviour
         if (index >= 0)
         {
             _avaliableIndex.Remove(index);
-            var tool = SetElement<ToolElement>(index);
-            tool.ResetKeyTool();
+            ToolType tt = (ToolType)_elementContent;
+            ToolElement tool = SetElement<ToolElement>(index);
+            tool.ReOnInit(tt);
         }
 
     }
@@ -641,14 +689,21 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
     _info.t = SetElement<ToolElement>(index);
 }
 */
-    private void SpawnTrap(List<int> _avaliableIndex)
+    private void SpawnTrap(int standAreaY, List<int> _avaliableIndex)
     {
         float trapPro = Random.Range(minTrapProbability, maxTrapProbability);
         int trapNum = (int)(_avaliableIndex.Count * trapPro);
 
         for (int i = 0; i < trapNum && _avaliableIndex.Count > 0; i++)
         {
+            int x, y;
             int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
+            GetPosByIndex(temp, out x, out y);
+            if ((x >= 0 && x < standAreaW) && (y >= standAreaY - 1 && y <= standAreaY + 1))
+            {
+                i--;
+                continue;
+            }
             SetElement<TrapElement>(temp);
             _avaliableIndex.Remove(temp);
         }
@@ -666,7 +721,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     private void SpawnTool(List<int> _avaliableIndex)
     {
-        for (int i = 0; i < 3 && _avaliableIndex.Count > 0; i++)
+        for (int i = 0; i < Random.Range(0, 3) && _avaliableIndex.Count > 0; i++)
         {
             int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
             SetElement<ToolElement>(temp);
@@ -675,7 +730,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
     }
     private void SpawnGold(List<int> _avaliableIndex)
     {
-        for (int i = 0; i < obstacleAreaNum * 2 && _avaliableIndex.Count > 0; i++)
+        for (int i = 0; i < Random.Range(0, obstacleAreaNum * 2) && _avaliableIndex.Count > 0; i++)
         {
             int temp = _avaliableIndex[Random.Range(0, _avaliableIndex.Count)];
             SetElement<GoldElement>(temp);
