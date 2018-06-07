@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 using Random = UnityEngine.Random;
 
 public class MainGameManager : MonoBehaviour
@@ -22,6 +23,9 @@ public class MainGameManager : MonoBehaviour
 
     public static MainGameManager Instance { get; private set; }
 
+
+    [Header("角色游戏物体"), SerializeField]
+    public GameObject player;
     [Header("背景预制体"), SerializeField]
     private GameObject bgElementPrefab;
     [Tooltip("边界预制体,顺序为:\n上,下,左,右,左上,右上,左下,右下")
@@ -186,6 +190,7 @@ public class MainGameManager : MonoBehaviour
                 (MapArray[x, y] as SingleCoverElement).UncoveredElementSingle();
             }
         }
+        player.transform.position = new Vector3(1, standAreaY, 0);
         return standAreaY;
     }
 
@@ -769,9 +774,23 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     private void ResetCamera()
     {
-        Camera camera = Camera.main;
-        Camera.main.orthographicSize = (h + 3) / 2f;
-        camera.transform.position = new Vector3((w - 1) / 2f, (h - 1) / 2f, -10);
+        //Camera camera = Camera.main;
+        //Camera.main.orthographicSize = (h + 3) / 2f;
+        //camera.transform.position = new Vector3((w - 1) / 2f, (h - 1) / 2f, -10);
+        var vCamera = GameObject.Find("VCamera").GetComponent<CinemachineVirtualCamera>();
+        vCamera.m_Lens.OrthographicSize = (h + 3) / 2f;
+        var cft = vCamera.GetCinemachineComponent(CinemachineCore.Stage.Body) as CinemachineFramingTransposer;
+        cft.m_DeadZoneHeight = (h * 100f) / (300f + h * 100f);
+        cft.m_DeadZoneWidth = (w * 100f) / (300f + w * 100f) / h * (16f / 9f);
+        GameObject.Find("Sprite_Holder").GetComponent<PolygonCollider2D>().SetPath(0, new Vector2[]
+        {
+            new Vector2(-2,-2),
+            new Vector2(-2,h+1),
+            new Vector2(w+1,h+1),
+            new Vector2(w+1,-2)
+        });
+
+
     }
 
     public Sprite GetNumberSpriteByPos(int x, int y)
