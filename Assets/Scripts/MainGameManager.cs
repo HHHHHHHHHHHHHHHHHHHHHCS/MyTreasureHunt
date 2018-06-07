@@ -25,7 +25,10 @@ public class MainGameManager : MonoBehaviour
 
 
     [Header("角色游戏物体"), SerializeField]
-    public GameObject player;
+    private GameObject player;
+    private Transform playerTarget;
+    private int startMoveX, startMoveY;
+    private Camera mainCamera;
     [Header("背景预制体"), SerializeField]
     private GameObject bgElementPrefab;
     [Tooltip("边界预制体,顺序为:\n上,下,左,右,左上,右上,左下,右下")
@@ -119,6 +122,7 @@ public class MainGameManager : MonoBehaviour
         ResetCamera();
     }
 
+    #region InitMap
     private void CreateMap()
     {
         var holder = new GameObject("Element_Holder").transform;
@@ -156,7 +160,6 @@ public class MainGameManager : MonoBehaviour
         Instantiate(borderElementsPrefabs[6], new Vector3(-1.25f, -1.25f, 0), Quaternion.identity, bgParent);
         Instantiate(borderElementsPrefabs[7], new Vector3(w + 0.25f, -1.25f, 0), Quaternion.identity, bgParent);
     }
-
 
     private void InitMap()
     {
@@ -733,6 +736,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
             _avaliableIndex.Remove(temp);
         }
     }
+
     private void SpawnGold(List<int> _avaliableIndex)
     {
         for (int i = 0; i < Random.Range(0, obstacleAreaNum * 2) && _avaliableIndex.Count > 0; i++)
@@ -742,6 +746,31 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
             _avaliableIndex.Remove(temp);
         }
     }
+
+    private void ResetCamera()
+    {
+        //Camera camera = Camera.main;
+        //Camera.main.orthographicSize = (h + 3) / 2f;
+        //camera.transform.position = new Vector3((w - 1) / 2f, (h - 1) / 2f, -10);
+        var vCamera = GameObject.Find("VCamera").GetComponent<CinemachineVirtualCamera>();
+        vCamera.m_Lens.OrthographicSize = (h + 3) / 2f;
+        var cft = vCamera.GetCinemachineComponent(CinemachineCore.Stage.Body) as CinemachineFramingTransposer;
+        cft.m_DeadZoneHeight = (h * 100f) / (300f + h * 100f);
+        cft.m_DeadZoneWidth = (w * 100f) / (300f + w * 100f) / h * (16f / 9f);
+        transform.Find("CameraCollider").GetComponent<PolygonCollider2D>().SetPath(0, new Vector2[]
+        {
+            new Vector2(-2,-2),
+            new Vector2(-2,h+1),
+            new Vector2(w+1,h+1),
+            new Vector2(w+1,-2)
+        });
+
+
+    }
+
+    #endregion
+
+    #region CommandTool
 
     private void GetPosByIndex(int index, out int x, out int y)
     {
@@ -753,8 +782,6 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
     {
         return w * y + x;
     }
-
-
 
     public T SetElement<T>(int index) where T : BaseElement
     {
@@ -772,32 +799,14 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         return temp;
     }
 
-    private void ResetCamera()
-    {
-        //Camera camera = Camera.main;
-        //Camera.main.orthographicSize = (h + 3) / 2f;
-        //camera.transform.position = new Vector3((w - 1) / 2f, (h - 1) / 2f, -10);
-        var vCamera = GameObject.Find("VCamera").GetComponent<CinemachineVirtualCamera>();
-        vCamera.m_Lens.OrthographicSize = (h + 3) / 2f;
-        var cft = vCamera.GetCinemachineComponent(CinemachineCore.Stage.Body) as CinemachineFramingTransposer;
-        cft.m_DeadZoneHeight = (h * 100f) / (300f + h * 100f);
-        cft.m_DeadZoneWidth = (w * 100f) / (300f + w * 100f) / h * (16f / 9f);
-        GameObject.Find("Sprite_Holder").GetComponent<PolygonCollider2D>().SetPath(0, new Vector2[]
-        {
-            new Vector2(-2,-2),
-            new Vector2(-2,h+1),
-            new Vector2(w+1,h+1),
-            new Vector2(w+1,-2)
-        });
-
-
-    }
-
     public Sprite GetNumberSpriteByPos(int x, int y)
     {
         return NumberSprites[CountAdjcentTraps(x, y)];
     }
 
+    #endregion
+
+    #region Method
     /// <summary>
     /// 计算周围八个位置的陷阱
     /// </summary>
@@ -901,5 +910,37 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
                 }
             }
         }
+    }
+
+    #endregion
+
+    private void OnMouseOver()
+    {
+        if(!playerTarget)
+        {
+            playerTarget = player.transform.Find("VCameraTarget");
+            mainCamera = Camera.main;
+            startMoveX = (int)(Screen.width * 0.8f);
+            startMoveY = Screen.height / 2;
+
+        }
+
+         if (Input.GetMouseButton(0))
+        {
+            playerTarget.transform.position += new Vector3(Input.GetAxis("Mouse X"), 0,0);
+        }
+        else if(Input.GetMouseButtonDown(0))
+        {
+            playerTarget.position = mainCamera.ScreenToWorldPoint(new Vector3(startMoveX, startMoveY, 0)) + new Vector3(0, 0, 10);
+        }
+        else if(Input.GetMouseButtonDown(1))
+        {
+            ResetPlayerTarget();
+        }
+    }
+
+    private void ResetPlayerTarget()
+    {
+        playerTarget.localPosition = Vector3.zero;
     }
 }
