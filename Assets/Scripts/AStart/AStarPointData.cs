@@ -1,29 +1,29 @@
-﻿public struct AStartPoint
+﻿public struct AStarPoint
 {
     public int x, y;
 
-    public AStartPoint(int _x, int _y)
+    public AStarPoint(int _x, int _y)
     {
         x = _x;
         y = _y;
     }
 
-    public bool Equals(AStartPoint obj)
+    public bool Equals(AStarPoint obj)
     {
         return x == obj.x && y == obj.y;
     }
 }
 
-public class AStartPointData
+public class AStarPointData
 {
-    public AStartPoint pointPos;
+    public AStarPoint pointPos;
     public double g, h;
-    public AStartPointData parent;
+    public AStarPointData parent;
 
     public double F { get { return g + h; } }
 
 
-    public AStartPointData(AStartPoint _AStartPoint, double _g, double _h, AStartPointData _parent)
+    public AStarPointData(AStarPoint _AStartPoint, double _g, double _h, AStarPointData _parent)
     {
         pointPos = _AStartPoint;
         g = _g;
