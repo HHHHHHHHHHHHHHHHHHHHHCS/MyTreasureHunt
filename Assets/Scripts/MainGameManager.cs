@@ -86,8 +86,10 @@ public class MainGameManager : MonoBehaviour
 
     [Header("关卡设置"), SerializeField]
     private int w;
+    public int W { get { return w; } }
     [SerializeField]
     private int h;
+    public int H { get { return h; } }
     [SerializeField]
     private float minTrapProbability;
     [SerializeField]
@@ -910,6 +912,11 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
                 }
             }
         }
+    }
+
+    public void FindPath(AStarPoint e)
+    {
+        //AStarPathFinding.FindPath();
     }
 
     #endregion

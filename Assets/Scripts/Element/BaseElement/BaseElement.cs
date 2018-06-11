@@ -72,7 +72,7 @@ public class BaseElement : MonoBehaviour
 
     protected virtual void OnLeftMouseButton()
     {
-        OnPlayerStand();
+        MainGameManager.Instance.FindPath(new AStarPoint(x, y));
     }
 
     protected virtual void OnMiddleMouseButton()

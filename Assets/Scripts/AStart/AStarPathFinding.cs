@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class AStarPathFinding
 {
+    #region 固定属性
     /// <summary>
     /// 起点
     /// </summary>
@@ -12,9 +13,13 @@ public class AStarPathFinding
     /// </summary>
     private const char End = 'E';
     /// <summary>
-    /// 空地
+    /// 空地0
     /// </summary>
-    private const char Space = '.';
+    private const char Space0 = '.';
+    /// <summary>
+    /// 空地1
+    /// </summary>
+    private const char Space1 = '+';
     /// <summary>
     /// 墙
     /// </summary>
@@ -35,7 +40,8 @@ public class AStarPathFinding
     /// 斜线距离
     /// </summary>
     private const double SlantLine = 1.4;
-
+    #endregion
+    #region 传入属性
     /// <summary>
     /// 地图字符串
     /// </summary>
@@ -55,13 +61,17 @@ public class AStarPathFinding
     /// 终点
     /// </summary>
     public static AStarPoint End_Pnt;
-
-
+    #endregion
+    #region H相关
+    /// <summary>
+    /// 计算H的抽象方法
+    /// </summary>
+    /// <param name="pnt"></param>
+    /// <returns></returns>
     public static double CalH(AStarPoint pnt)
     {
-        return HPowEuclidianDistance(pnt);
+        return HPowEuclidianDistance(pnt) * Map[pnt.x, pnt.y] == Space0 ? 1 : 10000;
     }
-
 
     /// <summary>
     /// 获取曼哈顿距离
@@ -92,8 +102,56 @@ public class AStarPathFinding
     {
         return Math.Pow(pnt.x - End_Pnt.x, 2) + Math.Pow(pnt.y - End_Pnt.y, 2);
     }
+    #endregion
 
-    private void Search()
+    private static bool GenerateMap(AStarPoint s, AStarPoint e)
+    {
+        if (Map[End_Pnt.x, End_Pnt.y] == Wall)
+        {
+            return false;
+        }
+        else if (s.Equals(e))
+        {
+            return false;
+        }
+
+        var main = MainGameManager.Instance;
+        var mainMap = main.MapArray;
+        Max_PNT = new AStarPoint(main.W, main.H);
+        Start_Pnt = s;
+        End_Pnt = e;
+        Map = new char[Max_PNT.x, Max_PNT.y];
+
+        for (int y = 0; y < Max_PNT.y; y++)
+        {
+            for (int x = 0; x < Max_PNT.x; x++)
+            {
+                var item = mainMap[x, y];
+                if (item.ElementContent == ElementContent.Door || item.ElementContent == ElementContent.Enemy
+                    || item.ElementContent == ElementContent.BigWall || item.ElementContent == ElementContent.SmallWall
+                    || item.ElementState == ElementState.Marked
+                    || (item.ElementContent == ElementContent.Trap && item.ElementState == ElementState.UnCovered))
+                {
+                    Map[x, y] = Wall;
+                }
+                else if (item.ElementState == ElementState.UnCovered
+                    || (item.ElementContent == ElementContent.Tool && (item as ToolElement).isHide == false)
+                    || (item.ElementContent == ElementContent.Gold && (item as ToolElement).isHide == false))
+                {
+                    Map[x, y] = Space0;
+                }
+                else
+                {
+                    Map[x, y] = Space1;
+                }
+            }
+        }
+        Map[Start_Pnt.x, Start_Pnt.y] = Start;
+        Map[End_Pnt.x, End_Pnt.y] = End;
+        return true;
+    }
+
+    private static bool Search(ref List<AStarPoint> pathList)
     {
         //用List集合做"开启列表"  来记录扩展的点
         List<AStarPointData> openList = new List<AStarPointData>();
@@ -112,7 +170,7 @@ public class AStarPathFinding
             openList.RemoveAt(0);
             AStarPoint point = data.pointPos;
             //将取出的点表示为已访问点
-            if (Map[point.x, point.y] == Space)
+            if (Map[point.x, point.y] == Space0 || Map[point.x, point.y] == Space1)
             {
                 Map[point.x, point.y] = Visited;
             }
@@ -128,18 +186,18 @@ public class AStarPathFinding
                         isFinish = true;
                         break;
                     }
-                    if (e != Space)
+                    if (e != Space0 && e != Space1)
                     {
                         continue;
                     }
                     //查找判断点是否在"开启列表"中
                     AStarPointData tempData = openList.Find(x => x.pointPos.Equals(newPoint));
-                    if(tempData!=null)
+                    if (tempData != null)
                     {
-                        double goffest= Math.Abs(directs[i, 0]) != Math.Abs(directs[i, 1])
-                            ?StraightLine:SlantLine;
+                        double goffest = Math.Abs(directs[i, 0]) != Math.Abs(directs[i, 1])
+                            ? StraightLine : SlantLine;
                         double tempG = data.g + goffest;
-                        if (tempData.g>data.g+goffest)
+                        if (tempData.g > data.g + goffest)
                         {
                             tempData.g = tempG;
                             tempData.parent = data;
@@ -158,15 +216,32 @@ public class AStarPathFinding
         }
 
         //反向查找 找出路径
+        pathList = new List<AStarPoint>();
         AStarPointData pointData = endData;
-        while(pointData!=null)
+        pathList.Add(End_Pnt);
+        while (pointData != null)
         {
             AStarPoint point = pointData.pointPos;
-            if(Map[point.x,point.y]==Visited)
+            if (Map[point.x, point.y] == Visited)
             {
                 Map[point.x, point.y] = OnPath;
+                pathList.Add(point);
             }
             pointData = pointData.parent;
         }
+        pathList.Add(Start_Pnt);
+        pathList.Reverse();
+
+        if(pathList.Count<=2&&(Math.Abs(Start_Pnt.x-End_Pnt.x)>1
+            || Math.Abs(Start_Pnt.y - End_Pnt.y) > 1))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    public static bool FindPath(AStarPoint s,AStarPoint e,ref List<AStarPoint> pathList)
+    {
+        return GenerateMap(s, e) && Search(ref pathList);
     }
 }
