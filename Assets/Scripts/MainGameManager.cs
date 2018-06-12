@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using Random = UnityEngine.Random;
+using DG.Tweening;
 
 public class MainGameManager : MonoBehaviour
 {
@@ -115,6 +116,7 @@ public class MainGameManager : MonoBehaviour
     private int obstacleAreaNum;
 
     public BaseElement[,] MapArray { get; private set; }
+    private Tweener pathTweener;
 
     private void Awake()
     {
@@ -916,14 +918,29 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     public void FindPath(AStarPoint e)
     {
-        //AStarPathFinding.FindPath();
+        if (pathTweener != null)
+        {
+            pathTweener.Kill();
+        }
+        AStarPoint s = new AStarPoint((int)player.transform.position.x, (int)player.transform.position.y);
+        List<AStarPoint> pathList;
+        if (!AStarPathFinding.FindPath(s, e, out pathList))
+        {
+            return;
+        }
+        else
+        {
+            pathTweener = player.transform.DOPath(pathList.ToVector3Array(), pathList.Count * 0.15f);
+            pathTweener.SetEase(Ease.Linear);
+            pathTweener.OnComplete(() => pathTweener = null).OnKill(() => pathTweener = null);
+        }
     }
 
     #endregion
 
     private void OnMouseOver()
     {
-        if(!playerTarget)
+        if (!playerTarget)
         {
             playerTarget = player.transform.Find("VCameraTarget");
             mainCamera = Camera.main;
@@ -932,15 +949,15 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
         }
 
-         if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         {
-            playerTarget.transform.position += new Vector3(Input.GetAxis("Mouse X"), 0,0);
+            playerTarget.transform.position += new Vector3(Input.GetAxis("Mouse X"), 0, 0);
         }
-        else if(Input.GetMouseButtonDown(0))
+        else if (Input.GetMouseButtonDown(0))
         {
             playerTarget.position = mainCamera.ScreenToWorldPoint(new Vector3(startMoveX, startMoveY, 0)) + new Vector3(0, 0, 10);
         }
-        else if(Input.GetMouseButtonDown(1))
+        else if (Input.GetMouseButtonDown(1))
         {
             ResetPlayerTarget();
         }

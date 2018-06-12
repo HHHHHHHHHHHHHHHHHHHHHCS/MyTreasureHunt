@@ -106,11 +106,7 @@ public class AStarPathFinding
 
     private static bool GenerateMap(AStarPoint s, AStarPoint e)
     {
-        if (Map[End_Pnt.x, End_Pnt.y] == Wall)
-        {
-            return false;
-        }
-        else if (s.Equals(e))
+        if (s.Equals(e))
         {
             return false;
         }
@@ -135,8 +131,8 @@ public class AStarPathFinding
                     Map[x, y] = Wall;
                 }
                 else if (item.ElementState == ElementState.UnCovered
-                    || (item.ElementContent == ElementContent.Tool && (item as ToolElement).isHide == false)
-                    || (item.ElementContent == ElementContent.Gold && (item as ToolElement).isHide == false))
+                    || (item.ElementContent == ElementContent.Tool && !(item as ToolElement).isHide )
+                    || (item.ElementContent == ElementContent.Gold && !(item as GoldElement).isHide ))
                 {
                     Map[x, y] = Space0;
                 }
@@ -146,16 +142,20 @@ public class AStarPathFinding
                 }
             }
         }
+        if (Map[End_Pnt.x, End_Pnt.y] == Wall)
+        {
+            return false;
+        }
         Map[Start_Pnt.x, Start_Pnt.y] = Start;
         Map[End_Pnt.x, End_Pnt.y] = End;
         return true;
     }
 
-    private static bool Search(ref List<AStarPoint> pathList)
+    private static bool Search(out List<AStarPoint> pathList)
     {
         //用List集合做"开启列表"  来记录扩展的点
         List<AStarPointData> openList = new List<AStarPointData>();
-        int[,] directs = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+        int[,] directs = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } , { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
         //把起点放入开启列表
         openList.Add(new AStarPointData(Start_Pnt, 0, 0, null));
 
@@ -174,10 +174,10 @@ public class AStarPathFinding
             {
                 Map[point.x, point.y] = Visited;
             }
-            for (int i = 0; i < directs.Rank; i++)
+            for (int i = 0; i < directs.GetLength(0); i++)
             {
                 AStarPoint newPoint = new AStarPoint(point.x + directs[i, 0], point.y + directs[i, 1]);
-                if (newPoint.x >= 0 && newPoint.x < Max_PNT.x && newPoint.y >= 0 && newPoint.y <= Max_PNT.y)
+                if (newPoint.x >= 0 && newPoint.x < Max_PNT.x && newPoint.y >= 0 && newPoint.y < Max_PNT.y)
                 {
                     char e = Map[newPoint.x, newPoint.y];
                     if (e == End)
@@ -240,8 +240,9 @@ public class AStarPathFinding
         return true;
     }
 
-    public static bool FindPath(AStarPoint s,AStarPoint e,ref List<AStarPoint> pathList)
+    public static bool FindPath(AStarPoint s,AStarPoint e, out List<AStarPoint> pathList)
     {
-        return GenerateMap(s, e) && Search(ref pathList);
+        pathList = null;
+        return GenerateMap(s, e) && Search(out pathList);
     }
 }

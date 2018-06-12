@@ -12,6 +12,11 @@
     {
         return x == obj.x && y == obj.y;
     }
+
+    public override string ToString()
+    {
+        return string.Format("x:{0} , y:{1}",x,y);
+    }
 }
 
 public class AStarPointData
