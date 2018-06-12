@@ -117,13 +117,39 @@ public class MainGameManager : MonoBehaviour
 
     public BaseElement[,] MapArray { get; private set; }
     private Tweener pathTweener;
+    private Vector2Int prePos, nowPos;
 
     private void Awake()
     {
         Instance = this;
+        prePos = Vector2Int.one * 100000;
         CreateMap();
         InitMap();
         ResetCamera();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ResetCamera();
+        }
+        nowPos = player.transform.position.ToVec2Int();
+        if (prePos != nowPos)
+        {
+            MapArray[nowPos.x, nowPos.y].OnPlayerStand();
+            MapArray[nowPos.x, nowPos.y].OnPlayerStand();
+            if (MapArray[nowPos.x, nowPos.y].ElementContent == ElementContent.Trap)
+            {
+                pathTweener.Kill();
+                nowPos = prePos;
+                player.transform.position = new Vector3(nowPos.x, nowPos.y, player.transform.position.z);
+            }
+            else
+            {
+                prePos = nowPos;
+            }
+        }
     }
 
     #region InitMap

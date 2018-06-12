@@ -40,6 +40,11 @@ public class AStarPathFinding
     /// 斜线距离
     /// </summary>
     private const double SlantLine = 1.4;
+    /// <summary>
+    /// 八个方向的苏组
+    /// </summary>
+    private static readonly int[,] directs = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+
     #endregion
     #region 传入属性
     /// <summary>
@@ -155,7 +160,6 @@ public class AStarPathFinding
     {
         //用List集合做"开启列表"  来记录扩展的点
         List<AStarPointData> openList = new List<AStarPointData>();
-        int[,] directs = { { 1, 0 }, { 0, 1 }, { -1, 0 }, { 0, -1 } , { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
         //把起点放入开启列表
         openList.Add(new AStarPointData(Start_Pnt, 0, 0, null));
 
@@ -197,7 +201,7 @@ public class AStarPathFinding
                         double goffest = Math.Abs(directs[i, 0]) != Math.Abs(directs[i, 1])
                             ? StraightLine : SlantLine;
                         double tempG = data.g + goffest;
-                        if (tempData.g > data.g + goffest)
+                        if (tempData.g > tempG)
                         {
                             tempData.g = tempG;
                             tempData.parent = data;

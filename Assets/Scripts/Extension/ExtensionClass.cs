@@ -14,5 +14,10 @@ public static class ExtensionClass
         return vec3Array;
     }
 
-
+    public static Vector2Int ToVec2Int(this Vector3 vec3)
+    {
+        int x = vec3.x - Mathf.FloorToInt(vec3.x) >= 0.5f ? Mathf.CeilToInt(vec3.x) : Mathf.FloorToInt(vec3.x);
+        int y = vec3.y - Mathf.FloorToInt(vec3.y) >= 0.5f ? Mathf.CeilToInt(vec3.y) : Mathf.FloorToInt(vec3.y);
+        return new Vector2Int(x,y);
+    }
 }

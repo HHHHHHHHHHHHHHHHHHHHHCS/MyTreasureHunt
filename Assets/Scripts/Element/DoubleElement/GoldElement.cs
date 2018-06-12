@@ -48,7 +48,11 @@ public class GoldElement : DoubleCoverElement
 
     public override void ConfirmSprite()
     {
-        Instantiate(MainGameManager.Instance.GoldEffect, transform).name = "GoldEffect";
+        Transform gold = transform.Find("GoldEffect");
+        if (gold != null)
+        {
+            Instantiate(MainGameManager.Instance.GoldEffect, transform).name = "GoldEffect";
+        }
         LoadSprite(MainGameManager.Instance.GoldSprites[(int)goldType]);
     }
 
