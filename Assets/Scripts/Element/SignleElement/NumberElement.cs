@@ -17,6 +17,7 @@ public class NumberElement : SingleCoverElement
     protected override void OnMiddleMouseButton()
     {
         base.OnMiddleMouseButton();
+        MainGameManager.Instance.Anim.SetTrigger("Quick");
     }
 
     public override void UncoveredElementSingle()

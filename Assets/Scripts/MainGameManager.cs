@@ -30,6 +30,7 @@ public class MainGameManager : MonoBehaviour
     private Transform playerTarget;
     private int startMoveX, startMoveY;
     private Camera mainCamera;
+    public Animator Anim { get; private set; }
     [Header("背景预制体"), SerializeField]
     private GameObject bgElementPrefab;
     [Tooltip("边界预制体,顺序为:\n上,下,左,右,左上,右上,左下,右下")
@@ -118,11 +119,13 @@ public class MainGameManager : MonoBehaviour
     public BaseElement[,] MapArray { get; private set; }
     private Tweener pathTweener;
     private Vector2Int prePos, nowPos;
+    private Vector2 dir;
 
     private void Awake()
     {
         Instance = this;
         prePos = Vector2Int.one * 100000;
+        Anim = player.GetComponent<Animator>();
         CreateMap();
         InitMap();
         ResetCamera();
@@ -137,6 +140,10 @@ public class MainGameManager : MonoBehaviour
         nowPos = player.transform.position.ToVec2Int();
         if (prePos != nowPos)
         {
+            dir = new Vector2Int(Mathf.Clamp( nowPos.x-prePos.x,-1,1)
+                , Mathf.Clamp(nowPos.y - prePos.y, -1, 1));
+            Anim.SetFloat("DirX", dir.x);
+            Anim.SetFloat("DirY", dir.y);
             MapArray[nowPos.x, nowPos.y].OnPlayerStand();
             MapArray[nowPos.x, nowPos.y].OnPlayerStand();
             if (MapArray[nowPos.x, nowPos.y].ElementContent == ElementContent.Trap)
@@ -899,6 +906,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
         if (CountAdjcentTraps(x, y) == marked)
         {
+            Anim.SetTrigger("QuickCheck");
             ForNearElement(x, y,
             (i, j) =>
             {
@@ -907,6 +915,10 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
                     MapArray[i, j].OnPlayerStand();
                 }
             });
+        }
+        else
+        {
+            Anim.SetTrigger("Why");
         }
     }
 
@@ -952,6 +964,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         List<AStarPoint> pathList;
         if (!AStarPathFinding.FindPath(s, e, out pathList))
         {
+            Anim.SetTrigger("Why");
             return;
         }
         else
