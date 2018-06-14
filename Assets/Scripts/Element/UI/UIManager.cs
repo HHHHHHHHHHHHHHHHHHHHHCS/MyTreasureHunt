@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
 
+    private RectTransform rect;
     private Image armorIcon;
     private Image keyIcon;
     private Image arrowBg;
@@ -32,32 +34,111 @@ public class UIManager : MonoBehaviour
     private Toggle tntToggle;
     private Toggle mapToggle;
 
+    private bool isHide;
+
     private void Awake()
     {
         Instance = this;
-        Transform iconHolder = transform.Find("BootmBar/IconHolder");
-        Transform textHolder = transform.Find("BootmBar/TextHolder");
-        levelText= transform.Find("BootmBar/LevelButton").GetComponent<Text>();
+        rect = transform.Find("BottomBar").transform as RectTransform;
+        Transform iconHolder = rect.Find("IconHolder");
+        Transform textHolder = rect.Find("TextHolder");
+        levelText = rect.Find("LevelButton").GetComponent<Text>();
         armorIcon = iconHolder.Find("ArmorIcon").GetComponent<Image>();
         keyIcon = iconHolder.Find("KeyIcon").GetComponent<Image>();
         arrowBg = iconHolder.Find("ArrowBg").GetComponent<Image>();
         arrowIcon = iconHolder.Find("ArrowIcon").GetComponent<Image>();
         swordIcon = iconHolder.Find("SwordIcon").GetComponent<Image>();
         hoeIcon = iconHolder.Find("HoeIcon").GetComponent<Image>();
-        hoeBag = iconHolder.Find("HoeIcon/BagIcon").GetComponent<Image>();
+        hoeBag = hoeIcon.transform.Find("BagMask").GetComponent<Image>();
         tntIcon = iconHolder.Find("TNTIcon").GetComponent<Image>();
-        tntBag = iconHolder.Find("TNTIcon/BagIcon").GetComponent<Image>();
+        tntBag = tntIcon.transform.Find("BagMask").GetComponent<Image>();
         mapIcon = iconHolder.Find("MapIcon").GetComponent<Image>();
-        mapBag = iconHolder.Find("MapIcon/BagIcon").GetComponent<Image>();
+        mapBag = mapIcon.transform.Find("BagMask").GetComponent<Image>();
         grassIcon = iconHolder.Find("GrassIcon").GetComponent<Image>();
-        hpText = textHolder.Find("HeartText").GetComponent<Text>(); 
-        armorText = textHolder.Find("ArrmorText").GetComponent<Text>();
-        keyText = textHolder.Find("KetText").GetComponent<Text>();
+        hpText = textHolder.Find("HeartText").GetComponent<Text>();
+        armorText = textHolder.Find("ArmorText").GetComponent<Text>();
+        keyText = textHolder.Find("KeyText").GetComponent<Text>();
         weaponText = textHolder.Find("WeaponText").GetComponent<Text>();
         hoeText = textHolder.Find("HoeText").GetComponent<Text>();
         tntText = textHolder.Find("TNTText").GetComponent<Text>();
-        mapText = textHolder.Find("Map").GetComponent<Text>();
-        goldText = textHolder.Find("Gold").GetComponent<Text>();
+        mapText = textHolder.Find("MapText").GetComponent<Text>();
+        goldText = textHolder.Find("GoldText").GetComponent<Text>();
+
+        rect.Find("LevelButton").GetComponent<Button>().onClick.AddListener(OnLevelButtonClick);
     }
 
+    private void Start()
+    {
+        OnUpdateUI();
+    }
+
+
+    private void OnLevelButtonClick()
+    {
+        if (isHide)
+        {
+            isHide = false;
+            rect.DOAnchorPosY(30f, 0.5f);
+        }
+        else
+        {
+            isHide = true;
+            rect.DOAnchorPosY(-2.5f, 0.5f);
+        }
+    }
+
+    public void OnUpdateUI()
+    {
+        var manager = MainGameManager.Instance;
+        levelText.text = "Level:" + manager.Lv;
+        hpText.text = manager.Hp.ToString();
+
+        armorIcon.gameObject.SetActive(manager.Armor != 0);
+        armorText.gameObject.SetActive(manager.Armor != 0);
+        armorText.text = manager.Armor.ToString();
+
+        keyIcon.gameObject.SetActive(manager.Key != 0);
+        keyText.gameObject.SetActive(manager.Key != 0);
+        keyText.text = manager.Key.ToString();
+
+        hoeIcon.gameObject.SetActive(manager.Hoe != 0);
+        hoeText.gameObject.SetActive(manager.Hoe != 0);
+        hoeText.text = manager.Hoe.ToString();
+
+        tntIcon.gameObject.SetActive(manager.Tnt != 0);
+        tntText.gameObject.SetActive(manager.Tnt != 0);
+        tntText.text = manager.Tnt.ToString();
+
+        mapIcon.gameObject.SetActive(manager.Map != 0);
+        mapText.gameObject.SetActive(manager.Map != 0);
+        mapText.text = manager.Map.ToString();
+
+        grassIcon.gameObject.SetActive(manager.IsGrass);
+        goldText.text = manager.Gold.ToString();
+
+        switch (manager.WeaponType)
+        {
+            case WeaponType.None:
+                arrowBg.gameObject.SetActive(true);
+                arrowIcon.gameObject.SetActive(false);
+                swordIcon.gameObject.SetActive(false);
+                weaponText.gameObject.SetActive(false);
+                break;
+            case WeaponType.Arrow:
+                arrowBg.gameObject.SetActive(false);
+                arrowIcon.gameObject.SetActive(true);
+                swordIcon.gameObject.SetActive(false);
+                weaponText.gameObject.SetActive(true);
+                weaponText.text = manager.Arrow.ToString();
+                break;
+            case WeaponType.Sword:
+                arrowBg.gameObject.SetActive(false);
+                arrowIcon.gameObject.SetActive(false);
+                swordIcon.gameObject.SetActive(true);
+                weaponText.gameObject.SetActive(false);
+                break;
+            default:
+                break;
+        }
+    }
 }

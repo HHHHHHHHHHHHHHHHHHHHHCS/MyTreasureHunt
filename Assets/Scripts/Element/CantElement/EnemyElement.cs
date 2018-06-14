@@ -12,4 +12,35 @@ public class EnemyElement : CantCoveredElement
         LoadSprite(MainGameManager.Instance.EnemyWallSprites[
             Random.Range(0, MainGameManager.Instance.EnemyWallSprites.Length)]);
     }
+
+    protected override void OnLeftMouseButton()
+    {
+        if (Vector3.Distance(transform.position, MainGameManager.Instance.Player.transform.position) < 1.5f)
+        {
+            switch (MainGameManager.Instance.WeaponType)
+            {
+                case WeaponType.None:
+                    base.OnLeftMouseButton();
+                    break;
+                case WeaponType.Arrow:
+                    MainGameManager.Instance.Arrow--;
+                    if(MainGameManager.Instance.Arrow==0)
+                    {
+                        MainGameManager.Instance.WeaponType = WeaponType.None;
+                    }
+                    UIManager.Instance.OnUpdateUI();
+                    ToNumberElement(true);
+                    break;
+                case WeaponType.Sword:
+                    UIManager.Instance.OnUpdateUI();
+                    ToNumberElement(true);
+                    break;
+            }
+
+        }
+        else
+        {
+            base.OnLeftMouseButton();
+        }
+    }
 }

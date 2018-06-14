@@ -27,7 +27,8 @@ public class MainGameManager : MonoBehaviour
 
     [Header("角色游戏物体"), SerializeField]
     private GameObject player;
-    private Transform playerTarget;
+    public GameObject Player { get { return player; } }
+    public Transform PlayerTarget { get; private set; }
     private int startMoveX, startMoveY;
     private Camera mainCamera;
     public Animator Anim { get; private set; }
@@ -85,6 +86,9 @@ public class MainGameManager : MonoBehaviour
     [Header("出口图片资源"), SerializeField]
     private Sprite exitSprite;
     public Sprite ExitSprite { get { return exitSprite; } }
+    [Header("开门的特效"), SerializeField]
+    private GameObject openDoorEffect;
+    public GameObject OpenDoorEffect { get { return openDoorEffect; } }
 
     [Header("关卡设置"), SerializeField]
     private int w;
@@ -116,6 +120,19 @@ public class MainGameManager : MonoBehaviour
     private int rewardMaxNumber;
     private int obstacleAreaNum;
 
+
+    public int Lv { get; set; }
+    public int Hp { get; set; }
+    public int Armor { get; set; }
+    public int Key { get; set; }
+    public WeaponType WeaponType { get; set; }
+    public int Arrow { get; set; }
+    public int Hoe { get; set; }
+    public int Tnt { get; set; }
+    public int Map { get; set; }
+    public bool IsGrass { get; set; }
+    public int Gold { get; set; }
+
     public BaseElement[,] MapArray { get; private set; }
     private Tweener pathTweener;
     private Vector2Int prePos, nowPos;
@@ -124,6 +141,8 @@ public class MainGameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        Lv = 1;
+        Hp = 3;
         prePos = Vector2Int.one * 100000;
         Anim = player.GetComponent<Animator>();
         CreateMap();
@@ -140,7 +159,7 @@ public class MainGameManager : MonoBehaviour
         nowPos = player.transform.position.ToVec2Int();
         if (prePos != nowPos)
         {
-            dir = new Vector2Int(Mathf.Clamp( nowPos.x-prePos.x,-1,1)
+            dir = new Vector2Int(Mathf.Clamp(nowPos.x - prePos.x, -1, 1)
                 , Mathf.Clamp(nowPos.y - prePos.y, -1, 1));
             Anim.SetFloat("DirX", dir.x);
             Anim.SetFloat("DirY", dir.y);
@@ -843,7 +862,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     #endregion
 
-    #region Method
+    #region Element Method
     /// <summary>
     /// 计算周围八个位置的陷阱
     /// </summary>
@@ -977,11 +996,37 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     #endregion
 
+    #region Player Method
+    public void TakeDamage()
+    {
+        if (Arrow > 0)
+        {
+            Arrow--;
+        }
+        else
+        {
+            Hp--;
+            if(Hp==0)
+            {
+                DisplayAllTraps();
+                Anim.SetBool("Die", true);
+            }
+            else
+            {
+                Anim.SetTrigger("TakeDamage");
+                
+            }
+        }
+        UIManager.Instance.OnUpdateUI();
+    }
+
+    #endregion
+
     private void OnMouseOver()
     {
-        if (!playerTarget)
+        if (!PlayerTarget)
         {
-            playerTarget = player.transform.Find("VCameraTarget");
+            PlayerTarget = player.transform.Find("VCameraTarget");
             mainCamera = Camera.main;
             startMoveX = (int)(Screen.width * 0.8f);
             startMoveY = Screen.height / 2;
@@ -990,11 +1035,11 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
         if (Input.GetMouseButton(0))
         {
-            playerTarget.transform.position += new Vector3(Input.GetAxis("Mouse X"), 0, 0);
+            PlayerTarget.transform.position += new Vector3(Input.GetAxis("Mouse X"), 0, 0);
         }
         else if (Input.GetMouseButtonDown(0))
         {
-            playerTarget.position = mainCamera.ScreenToWorldPoint(new Vector3(startMoveX, startMoveY, 0)) + new Vector3(0, 0, 10);
+            PlayerTarget.position = mainCamera.ScreenToWorldPoint(new Vector3(startMoveX, startMoveY, 0)) + new Vector3(0, 0, 10);
         }
         else if (Input.GetMouseButtonDown(1))
         {
@@ -1004,6 +1049,6 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     private void ResetPlayerTarget()
     {
-        playerTarget.localPosition = Vector3.zero;
+        PlayerTarget.localPosition = Vector3.zero;
     }
 }

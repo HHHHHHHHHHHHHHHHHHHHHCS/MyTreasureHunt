@@ -77,10 +77,7 @@ public class BaseElement : MonoBehaviour
 
     protected virtual void OnMiddleMouseButton()
     {
-        if (ElementState == ElementState.UnCovered)
-        {
-            MainGameManager.Instance.UncoveredAdjacentElements(x, y);
-        }
+
     }
 
 

@@ -16,8 +16,15 @@ public class NumberElement : SingleCoverElement
 
     protected override void OnMiddleMouseButton()
     {
-        base.OnMiddleMouseButton();
-        MainGameManager.Instance.Anim.SetTrigger("Quick");
+        if((int)MainGameManager.Instance.Player.transform.position.x==x
+            && (int)MainGameManager.Instance.Player.transform.position.y == y)
+        {
+            if (ElementState == ElementState.UnCovered)
+            {
+                MainGameManager.Instance.UncoveredAdjacentElements(x, y);
+            }
+            MainGameManager.Instance.Anim.SetTrigger("Quick");
+        }
     }
 
     public override void UncoveredElementSingle()

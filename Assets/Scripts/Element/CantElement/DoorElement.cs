@@ -10,4 +10,26 @@ public class DoorElement : CantCoveredElement
         ElementContent = ElementContent.Door;
         LoadSprite(MainGameManager.Instance.DoorWallSprite);
     }
+
+    protected override void OnLeftMouseButton()
+    {
+        if(Vector3.Distance(transform.position,MainGameManager.Instance.Player.transform.position)<1.5f)
+        {
+            if(MainGameManager.Instance.Key>0)
+            {
+                MainGameManager.Instance.Key--;
+                UIManager.Instance.OnUpdateUI();
+                Instantiate(MainGameManager.Instance.OpenDoorEffect,transform);
+                ToNumberElement(true);
+            }
+            else
+            {
+                base.OnLeftMouseButton();
+            }
+        }
+        else
+        {
+            base.OnLeftMouseButton();
+        }
+    }
 }

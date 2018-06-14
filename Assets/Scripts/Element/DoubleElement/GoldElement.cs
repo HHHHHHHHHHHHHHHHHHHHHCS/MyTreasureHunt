@@ -26,15 +26,13 @@ public class GoldElement : DoubleCoverElement
 
         //goldType = (GoldType)UnityEngine.Random.Range(0
         //    , Enum.GetValues(typeof(GoldType)).Length);
-        goldType = (GoldType)UnityEngine.Random.Range(0,7);
+        goldType = (GoldType)UnityEngine.Random.Range(0, 7);
 
-        if(!isHide)
+        if (!isHide)
         {
             ConfirmSprite();
         }
     }
-
-
 
     public override void OnUncovered()
     {
@@ -43,7 +41,15 @@ public class GoldElement : DoubleCoverElement
         {
             Destroy(gold.gameObject);
         }
+        GetGold();
         base.OnUncovered();
+    }
+
+    private void GetGold()
+    {
+        int x = MainGameManager.Instance.IsGrass ? 2 : 1;
+        MainGameManager.Instance.Gold += x * (int)goldType * 30;
+        UIManager.Instance.OnUpdateUI();
     }
 
     public override void ConfirmSprite()
@@ -55,5 +61,4 @@ public class GoldElement : DoubleCoverElement
         }
         LoadSprite(MainGameManager.Instance.GoldSprites[(int)goldType]);
     }
-
 }
