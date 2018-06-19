@@ -50,7 +50,8 @@ public class SelectGizmos : MonoBehaviour
                         }
                         else
                         {
-                            ((SingleCoverElement)temp).ToNumberElement(true);
+                            //todo:Bigwall 不能炸掉
+                            //((SingleCoverElement)temp).ToNumberElement(true);
                         }
                     });
                 break;

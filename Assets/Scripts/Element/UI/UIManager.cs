@@ -4,6 +4,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+public enum UIType
+{
+    Lv,
+    Hp,
+    Armor,
+    Sword,
+    Map,
+    Arrow,
+    Key,
+    Tnt,
+    Hoe,
+    Grass,
+    Gold
+}
+
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
@@ -93,7 +108,7 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void OnUpdateUI()
+    public void OnUpdateUI(params UIType[] uiType)
     {
         var manager = MainGameManager.Instance;
         levelText.text = "Level:" + manager.Lv;
@@ -145,6 +160,51 @@ public class UIManager : MonoBehaviour
                 break;
             default:
                 break;
+        }
+
+        foreach (var item in uiType)
+        {
+            RectTransform rt = null;
+            switch (item)
+            {
+                case UIType.Lv:
+                    rt = levelText.transform as RectTransform;
+                    break;
+                case UIType.Hp:
+                    rt = hpText.transform as RectTransform;
+                    break;
+                case UIType.Armor:
+                    rt = armorText.transform as RectTransform;
+                    break;
+                case UIType.Sword:
+                    rt = swordIcon.transform as RectTransform;
+                    break;
+                case UIType.Map:
+                    rt = mapIcon.transform as RectTransform;
+                    break;
+                case UIType.Arrow:
+                    rt = arrowIcon.transform as RectTransform;
+                    break;
+                case UIType.Key:
+                    rt = keyIcon.transform as RectTransform;
+                    break;
+                case UIType.Tnt:
+                    rt = tntIcon.transform as RectTransform;
+                    break;
+                case UIType.Hoe:
+                    rt = hoeIcon.transform as RectTransform;
+                    break;
+                case UIType.Grass:
+                    rt = grassIcon.transform as RectTransform;
+                    break;
+                case UIType.Gold:
+                    rt = goldText.transform as RectTransform;
+                    break;
+                default:
+                    break;
+            }
+            rt.DOShakeScale(0.5f)
+                .OnComplete(() => { rt.localScale = Vector3.one; });
         }
     }
 

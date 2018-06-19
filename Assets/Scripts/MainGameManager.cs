@@ -131,27 +131,27 @@ public class MainGameManager : MonoBehaviour
     private int obstacleAreaNum;
 
     private int lv;
-    public int Lv { get { return lv; } set { lv = value;UIManager.Instance.OnUpdateUI(); } }
+    public int Lv { get { return lv; } set { lv = value;UIManager.Instance.OnUpdateUI(UIType.Lv); } }
     private int hp;
-    public int Hp { get { return hp; } set { hp = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Hp { get { return hp; } set { hp = value; UIManager.Instance.OnUpdateUI(UIType.Hp); } }
     private int armor;
-    public int Armor { get { return armor; } set { armor = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Armor { get { return armor; } set { armor = value; UIManager.Instance.OnUpdateUI(UIType.Armor); } }
     private int key;
-    public int Key { get { return key; } set { key = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Key { get { return key; } set { key = value; UIManager.Instance.OnUpdateUI(UIType.Key); } }
     private WeaponType weapon;
-    public WeaponType WeaponType { get { return weapon; } set { weapon = value; UIManager.Instance.OnUpdateUI(); } }
+    public WeaponType WeaponType { get { return weapon; } set { weapon = value; UIManager.Instance.OnUpdateUI(UIType.Sword); } }
     private int arrow;
-    public int Arrow { get { return arrow; } set { arrow = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Arrow { get { return arrow; } set { arrow = value; UIManager.Instance.OnUpdateUI(UIType.Arrow); } }
     private int hoe;
-    public int Hoe { get { return hoe; } set { hoe = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Hoe { get { return hoe; } set { hoe = value; UIManager.Instance.OnUpdateUI(UIType.Hoe); } }
     private int tnt;
-    public int Tnt { get { return tnt; } set { tnt = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Tnt { get { return tnt; } set { tnt = value; UIManager.Instance.OnUpdateUI(UIType.Tnt); } }
     private int map;
-    public int Map { get { return map; } set { map = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Map { get { return map; } set { map = value; UIManager.Instance.OnUpdateUI(UIType.Map); } }
     private bool isGrass;
-    public bool IsGrass { get { return isGrass; } set { isGrass = value; UIManager.Instance.OnUpdateUI(); } }
+    public bool IsGrass { get { return isGrass; } set { isGrass = value; UIManager.Instance.OnUpdateUI(UIType.Grass); } }
     private int gold;
-    public int Gold { get { return gold; } set { gold = value; UIManager.Instance.OnUpdateUI(); } }
+    public int Gold { get { return gold; } set { gold = value; UIManager.Instance.OnUpdateUI(UIType.Gold); } }
 
     public BaseElement[,] MapArray { get; private set; }
     private Tweener pathTweener;
