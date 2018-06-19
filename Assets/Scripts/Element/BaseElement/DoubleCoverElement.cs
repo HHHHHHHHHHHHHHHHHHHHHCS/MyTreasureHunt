@@ -51,7 +51,7 @@ public class DoubleCoverElement : SingleCoverElement
     //    }
     //}
 
-    protected override void OnRightMouseButton()
+    public override void OnRightMouseButton()
     {
         switch (ElementState)
         {
@@ -74,6 +74,9 @@ public class DoubleCoverElement : SingleCoverElement
         }
     }
 
+    /// <summary>
+    /// 双翻  第一次翻开
+    /// </summary>
     public override void UncoveredElementSingle()
     {
         if (ElementState == ElementState.UnCovered) return;

@@ -81,7 +81,7 @@ public class BaseElement : MonoBehaviour
     }
 
 
-    protected virtual void OnRightMouseButton()
+    public virtual void OnRightMouseButton()
     {
 
     }

@@ -28,11 +28,9 @@ public class EnemyElement : CantCoveredElement
                     {
                         MainGameManager.Instance.WeaponType = WeaponType.None;
                     }
-                    UIManager.Instance.OnUpdateUI();
                     ToNumberElement(true);
                     break;
                 case WeaponType.Sword:
-                    UIManager.Instance.OnUpdateUI();
                     ToNumberElement(true);
                     break;
             }

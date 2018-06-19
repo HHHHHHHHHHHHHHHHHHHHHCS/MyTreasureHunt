@@ -49,7 +49,6 @@ public class GoldElement : DoubleCoverElement
     {
         int x = MainGameManager.Instance.IsGrass ? 2 : 1;
         MainGameManager.Instance.Gold += x * (int)goldType * 30;
-        UIManager.Instance.OnUpdateUI();
     }
 
     public override void ConfirmSprite()

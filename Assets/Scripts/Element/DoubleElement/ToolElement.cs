@@ -98,7 +98,6 @@ public class ToolElement : DoubleCoverElement
             default:
                 break;
         }
-        UIManager.Instance.OnUpdateUI();
     }
 
     public override void ConfirmSprite()

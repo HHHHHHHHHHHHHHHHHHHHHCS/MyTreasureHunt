@@ -30,9 +30,9 @@ public class UIManager : MonoBehaviour
     private Text tntText;
     private Text mapText;
     private Text goldText;
-    private Toggle hoeToggle;
-    private Toggle tntToggle;
-    private Toggle mapToggle;
+    public Toggle HoeToggle { get; private set; }
+    public Toggle TntToggle { get; private set; }
+    public Toggle MapToggle { get; private set; }
 
     private bool isHide;
 
@@ -63,8 +63,14 @@ public class UIManager : MonoBehaviour
         tntText = textHolder.Find("TNTText").GetComponent<Text>();
         mapText = textHolder.Find("MapText").GetComponent<Text>();
         goldText = textHolder.Find("GoldText").GetComponent<Text>();
+        HoeToggle = iconHolder.Find("HoeIcon").GetComponent<Toggle>();
+        TntToggle = iconHolder.Find("TNTIcon").GetComponent<Toggle>();
+        MapToggle = iconHolder.Find("MapIcon").GetComponent<Toggle>();
 
         rect.Find("LevelButton").GetComponent<Button>().onClick.AddListener(OnLevelButtonClick);
+        HoeToggle.onValueChanged.AddListener(OnHoeSelected);
+        TntToggle.onValueChanged.AddListener(OnTNTSelected);
+        MapToggle.onValueChanged.AddListener(OnMapSelected);
     }
 
     private void Start()
@@ -140,5 +146,22 @@ public class UIManager : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    private void OnHoeSelected(bool isOn)
+    {
+        MainGameManager.Instance.HoeSelect.SetActive(isOn);
+    }
+
+
+    private void OnTNTSelected(bool isOn)
+    {
+        MainGameManager.Instance.TNTSelect.SetActive(isOn);
+    }
+
+
+    private void OnMapSelected(bool isOn)
+    {
+        MainGameManager.Instance.MapSelect.SetActive(isOn);
     }
 }

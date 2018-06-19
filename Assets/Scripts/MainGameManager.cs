@@ -56,6 +56,16 @@ public class MainGameManager : MonoBehaviour
     private GameObject goldEffect;
     public GameObject GoldEffect { get { return goldEffect; } }
 
+    [Header("道具范围提示"), SerializeField]
+    private GameObject hoeSelect;
+    public GameObject HoeSelect { get { return hoeSelect; } }
+    [SerializeField]
+    private GameObject tntSelect;
+    public GameObject TNTSelect { get { return tntSelect; } }
+    [ SerializeField]
+    private GameObject mapSelect;
+    public GameObject MapSelect { get { return mapSelect; } }
+
     [Header("泥土图片资源"), SerializeField]
     private Sprite[] coverTiledSprites;
     public Sprite[] CoverTiledSprites { get { return coverTiledSprites; } }
@@ -120,18 +130,28 @@ public class MainGameManager : MonoBehaviour
     private int rewardMaxNumber;
     private int obstacleAreaNum;
 
-
-    public int Lv { get; set; }
-    public int Hp { get; set; }
-    public int Armor { get; set; }
-    public int Key { get; set; }
-    public WeaponType WeaponType { get; set; }
-    public int Arrow { get; set; }
-    public int Hoe { get; set; }
-    public int Tnt { get; set; }
-    public int Map { get; set; }
-    public bool IsGrass { get; set; }
-    public int Gold { get; set; }
+    private int lv;
+    public int Lv { get { return lv; } set { lv = value;UIManager.Instance.OnUpdateUI(); } }
+    private int hp;
+    public int Hp { get { return hp; } set { hp = value; UIManager.Instance.OnUpdateUI(); } }
+    private int armor;
+    public int Armor { get { return armor; } set { armor = value; UIManager.Instance.OnUpdateUI(); } }
+    private int key;
+    public int Key { get { return key; } set { key = value; UIManager.Instance.OnUpdateUI(); } }
+    private WeaponType weapon;
+    public WeaponType WeaponType { get { return weapon; } set { weapon = value; UIManager.Instance.OnUpdateUI(); } }
+    private int arrow;
+    public int Arrow { get { return arrow; } set { arrow = value; UIManager.Instance.OnUpdateUI(); } }
+    private int hoe;
+    public int Hoe { get { return hoe; } set { hoe = value; UIManager.Instance.OnUpdateUI(); } }
+    private int tnt;
+    public int Tnt { get { return tnt; } set { tnt = value; UIManager.Instance.OnUpdateUI(); } }
+    private int map;
+    public int Map { get { return map; } set { map = value; UIManager.Instance.OnUpdateUI(); } }
+    private bool isGrass;
+    public bool IsGrass { get { return isGrass; } set { isGrass = value; UIManager.Instance.OnUpdateUI(); } }
+    private int gold;
+    public int Gold { get { return gold; } set { gold = value; UIManager.Instance.OnUpdateUI(); } }
 
     public BaseElement[,] MapArray { get; private set; }
     private Tweener pathTweener;
@@ -960,9 +980,14 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     public void ForNearElement(int x, int y, Action<int, int> act)
     {
-        for (int i = x - 1; i <= x + 1; i++)
+        ForNearElement(x, y, 1, act);
+    }
+
+    public void ForNearElement(int x, int y,int offest, Action<int, int> act)
+    {
+        for (int i = x - offest; i <= x + offest; i++)
         {
-            for (int j = y - 1; j <= y + 1; j++)
+            for (int j = y - offest; j <= y + offest; j++)
             {
                 if ((i != x || j != y) && (i >= 0 && j >= 0)
                     && (i < w && j < h))
@@ -1017,7 +1042,6 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
                 
             }
         }
-        UIManager.Instance.OnUpdateUI();
     }
 
     #endregion

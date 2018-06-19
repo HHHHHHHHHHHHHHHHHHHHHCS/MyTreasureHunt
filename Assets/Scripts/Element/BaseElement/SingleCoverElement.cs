@@ -18,6 +18,9 @@ public class SingleCoverElement : BaseElement
             [Random.Range(0, MainGameManager.Instance.CoverTiledSprites.Length)]);
     }
 
+    /// <summary>
+    /// 整体翻开 翻开表现和事件
+    /// </summary>
     public virtual void UncoveredElement()
     {
         if (ElementState == ElementState.UnCovered)
@@ -26,11 +29,17 @@ public class SingleCoverElement : BaseElement
         OnUncovered();
     }
 
+    /// <summary>
+    /// 单纯的翻开表现
+    /// </summary>
     public virtual void UncoveredElementSingle()
     {
 
     }
 
+    /// <summary>
+    /// 翻开事件
+    /// </summary>
     public virtual void OnUncovered()
     {
 
@@ -61,7 +70,7 @@ public class SingleCoverElement : BaseElement
         }
     }
 
-    protected override void OnRightMouseButton()
+    public override void OnRightMouseButton()
     {
         switch (ElementState)
         {
