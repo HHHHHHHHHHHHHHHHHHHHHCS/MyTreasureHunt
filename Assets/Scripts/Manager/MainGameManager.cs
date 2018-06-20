@@ -6,7 +6,7 @@ using Cinemachine;
 using Random = UnityEngine.Random;
 using DG.Tweening;
 
-public class MainGameManager : MonoBehaviour
+public sealed class MainGameManager : MonoBehaviour
 {
     /*
     private struct CloseAreaInfo
@@ -62,7 +62,7 @@ public class MainGameManager : MonoBehaviour
     [SerializeField]
     private GameObject tntSelect;
     public GameObject TNTSelect { get { return tntSelect; } }
-    [ SerializeField]
+    [SerializeField]
     private GameObject mapSelect;
     public GameObject MapSelect { get { return mapSelect; } }
 
@@ -131,7 +131,7 @@ public class MainGameManager : MonoBehaviour
     private int obstacleAreaNum;
 
     private int lv;
-    public int Lv { get { return lv; } set { lv = value;UIManager.Instance.OnUpdateUI(UIType.Lv); } }
+    public int Lv { get { return lv; } set { lv = value; UIManager.Instance.OnUpdateUI(UIType.Lv); } }
     private int hp;
     public int Hp { get { return hp; } set { hp = value; UIManager.Instance.OnUpdateUI(UIType.Hp); } }
     private int armor;
@@ -983,7 +983,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         ForNearElement(x, y, 1, act);
     }
 
-    public void ForNearElement(int x, int y,int offest, Action<int, int> act)
+    public void ForNearElement(int x, int y, int offest, Action<int, int> act)
     {
         for (int i = x - offest; i <= x + offest; i++)
         {
@@ -1031,7 +1031,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         else
         {
             Hp--;
-            if(Hp==0)
+            if (Hp == 0)
             {
                 DisplayAllTraps();
                 Anim.SetBool("Die", true);
@@ -1039,7 +1039,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
             else
             {
                 Anim.SetTrigger("TakeDamage");
-                
+
             }
         }
     }
