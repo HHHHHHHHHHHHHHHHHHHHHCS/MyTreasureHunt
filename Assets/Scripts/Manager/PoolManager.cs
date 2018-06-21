@@ -37,13 +37,20 @@ public sealed class PoolManager
         //unCoveredEffect = new List<GameObject>();
         //goldEffect = new List<GameObject>();
         //doorOpenEffect = new List<GameObject>();
+        MainGameManager manager = MainGameManager.Instance;
         effectPoolDic = new Dictionary<EffectType, List<GameObject>>
         {
             { EffectType.SmokeEffect, new List<GameObject>() },
             { EffectType.UnCoveredEffect, new List<GameObject>() },
             { EffectType.GoldEffect, new List<GameObject>() },
         };
-        effectGOPrefabDic = new Dictionary<EffectType, GameObject>();
+        effectGOPrefabDic = new Dictionary<EffectType, GameObject>
+        {
+            { EffectType.SmokeEffect, manager.SmokeEffect },
+            { EffectType.UnCoveredEffect, manager.UncoveredEffect },
+            { EffectType.GoldEffect, manager.GoldEffect },
+        };
+
         return this;
     }
 
@@ -89,17 +96,19 @@ public sealed class PoolManager
         }
     }
 
-    public void StoreInstance(EffectType _type,GameObject go)
+    public void StoreInstance(EffectType _type, GameObject go)
     {
-        List<GameObject> list= effectPoolDic[_type];
-        if(list.Count<maxListNumber)
+        List<GameObject> list = effectPoolDic[_type];
+        if (list.Count < maxListNumber)
         {
             go.SetActive(false);
             list.Add(go);
         }
         else
         {
+            go.SetActive(false);
             GameObject.Destroy(go);
+   
         }
     }
 }

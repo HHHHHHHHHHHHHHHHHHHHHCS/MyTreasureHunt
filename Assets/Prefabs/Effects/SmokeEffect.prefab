@@ -21,6 +21,7 @@ GameObject:
   - component: {fileID: 4535996709437430}
   - component: {fileID: 198482602986785106}
   - component: {fileID: 199258390209128074}
+  - component: {fileID: 114886469528590112}
   m_Layer: 0
   m_Name: SmokeEffect
   m_TagString: Untagged
@@ -41,6 +42,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114886469528590112
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1122466527375896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b6e927f670166744ba933b2f8fa33d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  effectType: 0
+  delay: 0.75
 --- !u!198 &198482602986785106
 ParticleSystem:
   m_ObjectHideFlags: 1

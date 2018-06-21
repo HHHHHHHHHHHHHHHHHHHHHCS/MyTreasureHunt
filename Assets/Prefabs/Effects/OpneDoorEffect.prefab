@@ -21,7 +21,7 @@ GameObject:
   - component: {fileID: 4230744851327344}
   - component: {fileID: 212312175188671340}
   - component: {fileID: 95207775334621770}
-  - component: {fileID: 114582782420787256}
+  - component: {fileID: 114843834069061238}
   m_Layer: 0
   m_Name: OpneDoorEffect
   m_TagString: Untagged
@@ -59,7 +59,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114582782420787256
+--- !u!114 &114843834069061238
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -67,7 +67,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1666038587499930}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b6e927f670166744ba933b2f8fa33d7, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f86075aecdb9684297f3e3c1466bce3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   delay: 0.5

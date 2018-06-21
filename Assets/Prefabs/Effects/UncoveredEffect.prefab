@@ -206,6 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b6e927f670166744ba933b2f8fa33d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  effectType: 1
   delay: 0.75
 --- !u!198 &198642071344010860
 ParticleSystem:

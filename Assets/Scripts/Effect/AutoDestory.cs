@@ -5,9 +5,10 @@ using UnityEngine;
 public class AutoDestory : MonoBehaviour
 {
     [SerializeField]
-    private float delay = 0.75f;
+    protected float delay = 0.75f;
 
-    private void Start()
+
+    protected virtual void OnEnable()
     {
         Destroy(gameObject, delay);
     }

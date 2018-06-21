@@ -39,7 +39,7 @@ public class GoldElement : DoubleCoverElement
         Transform gold = transform.Find("GoldEffect");
         if (gold != null)
         {
-            Destroy(gold.gameObject);
+            PoolManager.Instance.StoreInstance(EffectType.GoldEffect, gold.gameObject);
         }
         GetGold();
         base.OnUncovered();
@@ -56,7 +56,7 @@ public class GoldElement : DoubleCoverElement
         Transform gold = transform.Find("GoldEffect");
         if (gold != null)
         {
-            Instantiate(MainGameManager.Instance.GoldEffect, transform).name = "GoldEffect";
+            PoolManager.Instance.GetInstance(EffectType.GoldEffect, transform).name = "GoldEffect";
         }
         LoadSprite(MainGameManager.Instance.GoldSprites[(int)goldType]);
     }

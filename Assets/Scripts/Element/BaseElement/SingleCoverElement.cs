@@ -57,7 +57,7 @@ public class SingleCoverElement : BaseElement
         flag.transform.localPosition = Vector3.zero;
         flag.transform.localScale = Vector3.one*1.25f;
         flag.transform.DOScale(Vector3.one, 0.15f);
-        Instantiate(MainGameManager.Instance.SmokeEffect,transform);
+        PoolManager.Instance.GetInstance(EffectType.SmokeEffect,transform);
     }
 
     public virtual void RemoveFlag()

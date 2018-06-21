@@ -36,7 +36,7 @@ public class NumberElement : SingleCoverElement
         ClearShadow();
         if(NeedEffect)
         {
-            Instantiate(MainGameManager.Instance.UncoveredEffect, transform);
+            PoolManager.Instance.GetInstance(EffectType.UnCoveredEffect, transform);
         }
         LoadSprite(MainGameManager.Instance.GetNumberSpriteByPos(x,y));
     }

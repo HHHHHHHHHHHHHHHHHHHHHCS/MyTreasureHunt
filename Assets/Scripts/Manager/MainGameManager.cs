@@ -164,6 +164,7 @@ public sealed class MainGameManager : MonoBehaviour
         Lv = 1;
         Hp = 3;
         prePos = Vector2Int.one * 100000;
+        var poolManager = PoolManager.Instance;
         Anim = player.GetComponent<Animator>();
         CreateMap();
         InitMap();
