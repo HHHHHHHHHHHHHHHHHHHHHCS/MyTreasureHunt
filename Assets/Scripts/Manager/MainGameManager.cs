@@ -29,7 +29,7 @@ public sealed class MainGameManager : MonoBehaviour
     private GameObject player;
     public GameObject Player { get { return player; } }
     public Transform PlayerTarget { get; private set; }
-    private int startMoveX, startMoveY;
+    private float startMoveX, startMoveY, endMoveX;
     private Camera mainCamera;
     public Animator Anim { get; private set; }
     [Header("背景预制体"), SerializeField]
@@ -161,6 +161,7 @@ public sealed class MainGameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        var i = DataManager.Instance;
         Lv = 1;
         Hp = 3;
         prePos = Vector2Int.one * 100000;
@@ -1055,16 +1056,18 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
             mainCamera = Camera.main;
             startMoveX = (int)(Screen.width * 0.8f);
             startMoveY = Screen.height / 2;
-
+            endMoveX =  W + 3;
         }
 
-        if (Input.GetMouseButton(0))
-        {
-            PlayerTarget.transform.position += new Vector3(Input.GetAxis("Mouse X"), 0, 0);
-        }
-        else if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             PlayerTarget.position = mainCamera.ScreenToWorldPoint(new Vector3(startMoveX, startMoveY, 0)) + new Vector3(0, 0, 10);
+        }
+        else if(Input.GetMouseButton(0))
+        {
+            Vector3 vec3 = PlayerTarget.transform.position - new Vector3(Input.GetAxis("Mouse X"), 0, 0);
+            vec3.x = Mathf.Clamp(vec3.x, 0, endMoveX);
+            PlayerTarget.transform.position = vec3;
         }
         else if (Input.GetMouseButtonDown(1))
         {
