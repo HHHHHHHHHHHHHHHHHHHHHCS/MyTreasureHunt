@@ -24,7 +24,7 @@ public class EnemyElement : CantCoveredElement
                     break;
                 case WeaponType.Arrow:
                     MainGameManager.Instance.Arrow--;
-                    if(MainGameManager.Instance.Arrow==0)
+                    if(MainGameManager.Instance.Arrow<=0)
                     {
                         MainGameManager.Instance.WeaponType = WeaponType.None;
                     }

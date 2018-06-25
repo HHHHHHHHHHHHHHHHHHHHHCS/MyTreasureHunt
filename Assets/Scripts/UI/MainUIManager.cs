@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public enum UIType
 {
@@ -19,11 +20,11 @@ public enum UIType
     Gold
 }
 
-public class UIManager : MonoBehaviour
+public class MainUIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
+    public static MainUIManager Instance { get; private set; }
 
-    private RectTransform rect;
+    private RectTransform bottomPanel, passPanel, endPanel;
     private Image armorIcon;
     private Image keyIcon;
     private Image arrowBg;
@@ -54,10 +55,10 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        rect = transform.Find("BottomBar").transform as RectTransform;
-        Transform iconHolder = rect.Find("IconHolder");
-        Transform textHolder = rect.Find("TextHolder");
-        levelText = rect.Find("LevelButton").GetComponent<Text>();
+        bottomPanel = transform.Find("BottomPanel").transform as RectTransform;
+        Transform iconHolder = bottomPanel.Find("IconHolder");
+        Transform textHolder = bottomPanel.Find("TextHolder");
+        levelText = bottomPanel.Find("LevelButton").GetComponent<Text>();
         armorIcon = iconHolder.Find("ArmorIcon").GetComponent<Image>();
         keyIcon = iconHolder.Find("KeyIcon").GetComponent<Image>();
         arrowBg = iconHolder.Find("ArrowBg").GetComponent<Image>();
@@ -82,10 +83,18 @@ public class UIManager : MonoBehaviour
         TntToggle = iconHolder.Find("TNTIcon").GetComponent<Toggle>();
         MapToggle = iconHolder.Find("MapIcon").GetComponent<Toggle>();
 
-        rect.Find("LevelButton").GetComponent<Button>().onClick.AddListener(OnLevelButtonClick);
+        passPanel = transform.Find("PassPanel").transform as RectTransform;
+        var nextLevelButton = passPanel.Find("Bg/NextLevelButton").GetComponent<Button>();
+
+        endPanel = transform.Find("EndPanel").transform as RectTransform;
+        var exitButton = endPanel.Find("Bg/ExitButton").GetComponent<Button>();
+
+        bottomPanel.Find("LevelButton").GetComponent<Button>().onClick.AddListener(OnLevelButtonClick);
         HoeToggle.onValueChanged.AddListener(OnHoeSelected);
         TntToggle.onValueChanged.AddListener(OnTNTSelected);
         MapToggle.onValueChanged.AddListener(OnMapSelected);
+        nextLevelButton.onClick.AddListener(() => { MainGameManager.Instance.ChangeScene(SceneManager.GetActiveScene().name); });
+        exitButton.onClick.AddListener(() => { MainGameManager.Instance.ChangeScene("menu"); });
     }
 
     private void Start()
@@ -99,12 +108,12 @@ public class UIManager : MonoBehaviour
         if (isHide)
         {
             isHide = false;
-            rect.DOAnchorPosY(30f, 0.5f);
+            bottomPanel.DOAnchorPosY(30f, 0.5f);
         }
         else
         {
             isHide = true;
-            rect.DOAnchorPosY(-2.5f, 0.5f);
+            bottomPanel.DOAnchorPosY(-2.5f, 0.5f);
         }
     }
 
@@ -223,5 +232,20 @@ public class UIManager : MonoBehaviour
     private void OnMapSelected(bool isOn)
     {
         MainGameManager.Instance.MapSelect.SetActive(isOn);
+    }
+
+    public void ShowPassPanel()
+    {
+        passPanel.gameObject.SetActive(true);
+    }
+
+    public void ShowEndPanel()
+    {
+        endPanel.gameObject.SetActive(true);
+    }
+
+    public void DoDestory()
+    {
+        Instance = null;
     }
 }

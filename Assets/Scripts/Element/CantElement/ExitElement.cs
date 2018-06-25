@@ -11,4 +11,9 @@ public class ExitElement : CantCoveredElement
         ClearShadow();
         LoadSprite(MainGameManager.Instance.ExitSprite);
     }
+
+    public override void OnPlayerStand()
+    {
+        MainGameManager.Instance.GotoNextLevel();
+    }
 }

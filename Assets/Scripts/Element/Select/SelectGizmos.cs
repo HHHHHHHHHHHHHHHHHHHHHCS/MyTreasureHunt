@@ -14,7 +14,7 @@ public class SelectGizmos : MonoBehaviour
         {
             case ToolType.Hoe:
                 MainGameManager.Instance.Hoe--;
-                UIManager.Instance.HoeToggle.isOn = false;
+                MainUIManager.Instance.HoeToggle.isOn = false;
                 MainGameManager.Instance.ForNearElement(posX, posY
                     , (x, y) =>
                     {
@@ -35,7 +35,7 @@ public class SelectGizmos : MonoBehaviour
                 break;
             case ToolType.Tnt:
                 MainGameManager.Instance.Tnt--;
-                UIManager.Instance.TntToggle.isOn = false;
+                MainUIManager.Instance.TntToggle.isOn = false;
                 MainGameManager.Instance.ForNearElement(posX, posY
                     , (x, y) =>
                     {
@@ -48,16 +48,15 @@ public class SelectGizmos : MonoBehaviour
                         {
                             ((DoubleCoverElement)temp).UncoveredElementSingle();
                         }
-                        else
+                        else if (temp.ElementContent ==  ElementContent.BigWall)
                         {
-                            //todo:Bigwall 不能炸掉
-                            //((SingleCoverElement)temp).ToNumberElement(true);
+                            ((BaseElement)temp).ToNumberElement(true);
                         }
                     });
                 break;
             case ToolType.Map:
                 MainGameManager.Instance.Map--;
-                UIManager.Instance.MapToggle.isOn = false;
+                MainUIManager.Instance.MapToggle.isOn = false;
                 MainGameManager.Instance.ForNearElement(posX, posY, 3
                 , (x, y) =>
                 {

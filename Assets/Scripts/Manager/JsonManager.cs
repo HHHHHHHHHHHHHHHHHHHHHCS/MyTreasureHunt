@@ -122,7 +122,7 @@ public class JsonManager
 
         Dictionary<PlayerAttribute, int> playerDic = new Dictionary<PlayerAttribute, int>();
         playerDic.Add(PlayerAttribute.Lv, 1);
-        playerDic.Add(PlayerAttribute.Hp, 3);
+        playerDic.Add(PlayerAttribute.Hp, 20);
         for(int i=2;i<Enum.GetValues(typeof( PlayerAttribute)).Length;i++)
         {
             playerDic.Add((PlayerAttribute)i, 0);

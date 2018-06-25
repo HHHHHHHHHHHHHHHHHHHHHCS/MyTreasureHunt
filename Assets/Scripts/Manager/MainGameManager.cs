@@ -5,6 +5,7 @@ using UnityEngine;
 using Cinemachine;
 using Random = UnityEngine.Random;
 using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public sealed class MainGameManager : MonoBehaviour
 {
@@ -131,42 +132,51 @@ public sealed class MainGameManager : MonoBehaviour
     private int obstacleAreaNum;
 
     private int lv;
-    public int Lv { get { return lv; } set { lv = value; UIManager.Instance.OnUpdateUI(UIType.Lv); } }
+    public int Lv { get { return lv; } set { lv = value; MainUIManager.Instance.OnUpdateUI(UIType.Lv); } }
     private int hp;
-    public int Hp { get { return hp; } set { hp = value; UIManager.Instance.OnUpdateUI(UIType.Hp); } }
+    public int Hp { get { return hp; } set { hp = value; MainUIManager.Instance.OnUpdateUI(UIType.Hp); } }
     private int armor;
-    public int Armor { get { return armor; } set { armor = value; UIManager.Instance.OnUpdateUI(UIType.Armor); } }
+    public int Armor { get { return armor; } set { armor = value; MainUIManager.Instance.OnUpdateUI(UIType.Armor); } }
     private int key;
-    public int Key { get { return key; } set { key = value; UIManager.Instance.OnUpdateUI(UIType.Key); } }
+    public int Key { get { return key; } set { key = value; MainUIManager.Instance.OnUpdateUI(UIType.Key); } }
     private WeaponType weapon;
-    public WeaponType WeaponType { get { return weapon; } set { weapon = value; UIManager.Instance.OnUpdateUI(UIType.Sword); } }
+    public WeaponType WeaponType { get { return weapon; } set { weapon = value; MainUIManager.Instance.OnUpdateUI(UIType.Sword); } }
     private int arrow;
-    public int Arrow { get { return arrow; } set { arrow = value; UIManager.Instance.OnUpdateUI(UIType.Arrow); } }
+    public int Arrow { get { return arrow; } set { arrow = value; MainUIManager.Instance.OnUpdateUI(UIType.Arrow); } }
     private int hoe;
-    public int Hoe { get { return hoe; } set { hoe = value; UIManager.Instance.OnUpdateUI(UIType.Hoe); } }
+    public int Hoe { get { return hoe; } set { hoe = value; MainUIManager.Instance.OnUpdateUI(UIType.Hoe); } }
     private int tnt;
-    public int Tnt { get { return tnt; } set { tnt = value; UIManager.Instance.OnUpdateUI(UIType.Tnt); } }
+    public int Tnt { get { return tnt; } set { tnt = value; MainUIManager.Instance.OnUpdateUI(UIType.Tnt); } }
     private int map;
-    public int Map { get { return map; } set { map = value; UIManager.Instance.OnUpdateUI(UIType.Map); } }
+    public int Map { get { return map; } set { map = value; MainUIManager.Instance.OnUpdateUI(UIType.Map); } }
     private bool isGrass;
-    public bool IsGrass { get { return isGrass; } set { isGrass = value; UIManager.Instance.OnUpdateUI(UIType.Grass); } }
+    public bool IsGrass { get { return isGrass; } set { isGrass = value; MainUIManager.Instance.OnUpdateUI(UIType.Grass); } }
     private int gold;
-    public int Gold { get { return gold; } set { gold = value; UIManager.Instance.OnUpdateUI(UIType.Gold); } }
+    public int Gold { get { return gold; } set { gold = value; MainUIManager.Instance.OnUpdateUI(UIType.Gold); } }
 
     public BaseElement[,] MapArray { get; private set; }
     private Tweener pathTweener;
     private Vector2Int prePos, nowPos;
     private Vector2 dir;
 
+    private bool isSucceed;
+
     private void Awake()
     {
         Instance = this;
-        var i = DataManager.Instance;
-        Lv = 1;
-        Hp = 3;
+        LoadSaveData();
         prePos = Vector2Int.one * 100000;
         var poolManager = PoolManager.Instance;
         Anim = player.GetComponent<Animator>();
+
+
+        PlayerTarget = player.transform.Find("VCameraTarget");
+        mainCamera = Camera.main;
+        startMoveX = (int)(Screen.width * 0.8f);
+        startMoveY = Screen.height / 2;
+        endMoveX = W + 3;
+
+
         CreateMap();
         InitMap();
         ResetCamera();
@@ -181,6 +191,7 @@ public sealed class MainGameManager : MonoBehaviour
         nowPos = player.transform.position.ToVec2Int();
         if (prePos != nowPos)
         {
+            ResetPlayerTarget();
             dir = new Vector2Int(Mathf.Clamp(nowPos.x - prePos.x, -1, 1)
                 , Mathf.Clamp(nowPos.y - prePos.y, -1, 1));
             Anim.SetFloat("DirX", dir.x);
@@ -790,6 +801,23 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
                 i--;
                 continue;
             }
+            else
+            {
+                bool isContineue = false;
+                ForNearElement(x, y, (_x, _y) =>
+                 {
+                     if (MapArray[_x, _y].ElementContent == ElementContent.BigWall
+                     || MapArray[_x, _y].ElementContent == ElementContent.Door)
+                     {
+                         isContineue = true;
+                     }
+                 });
+                if (isContineue)
+                {
+                    i--;
+                    continue;
+                }
+            }
             SetElement<TrapElement>(temp);
             _avaliableIndex.Remove(temp);
         }
@@ -1026,17 +1054,16 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
     #region Player Method
     public void TakeDamage()
     {
-        if (Arrow > 0)
+        if (Armor > 0)
         {
-            Arrow--;
+            Armor--;
         }
         else
         {
             Hp--;
             if (Hp == 0)
             {
-                DisplayAllTraps();
-                Anim.SetBool("Die", true);
+                GameEnd();
             }
             else
             {
@@ -1050,20 +1077,13 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     private void OnMouseOver()
     {
-        if (!PlayerTarget)
-        {
-            PlayerTarget = player.transform.Find("VCameraTarget");
-            mainCamera = Camera.main;
-            startMoveX = (int)(Screen.width * 0.8f);
-            startMoveY = Screen.height / 2;
-            endMoveX =  W + 3;
-        }
+
 
         if (Input.GetMouseButtonDown(0))
         {
             PlayerTarget.position = mainCamera.ScreenToWorldPoint(new Vector3(startMoveX, startMoveY, 0)) + new Vector3(0, 0, 10);
         }
-        else if(Input.GetMouseButton(0))
+        else if (Input.GetMouseButton(0))
         {
             Vector3 vec3 = PlayerTarget.transform.position - new Vector3(Input.GetAxis("Mouse X"), 0, 0);
             vec3.x = Mathf.Clamp(vec3.x, 0, endMoveX);
@@ -1078,5 +1098,53 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
     private void ResetPlayerTarget()
     {
         PlayerTarget.localPosition = Vector3.zero;
+    }
+
+    private void LoadSaveData()
+    {
+        var manager = DataManager.Instance;
+        Lv = manager.ReadData(PlayerAttribute.Lv);
+        Hp = manager.ReadData(PlayerAttribute.Hp);
+        Armor = manager.ReadData(PlayerAttribute.Armor);
+        Hoe = manager.ReadData(PlayerAttribute.Hoe);
+        Tnt = manager.ReadData(PlayerAttribute.Tnt);
+        Map = manager.ReadData(PlayerAttribute.Map);
+        Gold = manager.ReadData(PlayerAttribute.Gold);
+    }
+
+    public void GotoNextLevel()
+    {
+        if (isSucceed)
+        {
+            return;
+        }
+        isSucceed = true;
+        Hp += 5;
+        Lv++;
+        DataManager.Instance.UpdateData(PlayerAttribute.Lv, Lv);
+        DataManager.Instance.UpdateData(PlayerAttribute.Hp, Hp);
+        DataManager.Instance.UpdateData(PlayerAttribute.Armor, Armor);
+        DataManager.Instance.UpdateData(PlayerAttribute.Hoe, Hoe);
+        DataManager.Instance.UpdateData(PlayerAttribute.Tnt, Tnt);
+        DataManager.Instance.UpdateData(PlayerAttribute.Map, Map);
+        DataManager.Instance.UpdateData(PlayerAttribute.Gold, Gold);
+        DataManager.Instance.SaveData();
+        Anim.SetBool("Pass", true);
+        MainUIManager.Instance.ShowPassPanel();
+    }
+
+    public void GameEnd()
+    {
+        DisplayAllTraps();
+        Anim.SetBool("Die", true);
+        DataManager.Instance.CleanData();
+        MainUIManager.Instance.ShowEndPanel();
+    }
+
+    public void ChangeScene(string sceneName)
+    {
+        PoolManager.Instance.DoDestory();
+        MainUIManager.Instance.DoDestory();
+        SceneManager.LoadScene(sceneName);
     }
 }

@@ -111,4 +111,9 @@ public sealed class PoolManager
    
         }
     }
+
+    public void DoDestory()
+    {
+        _instance = null;
+    }
 }

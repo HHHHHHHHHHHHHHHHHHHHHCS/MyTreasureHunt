@@ -31,14 +31,19 @@ public sealed class DataManager
         return this;
     }
 
-    public void UpdateData()
+    public void UpdateData(PlayerAttribute attr,int data)
     {
-        JsonManager.Instance.UpdateData(dataDic);
+        dataDic[attr] = data;
     }
 
     public int ReadData(PlayerAttribute attr)
     {
         return dataDic[attr];
+    }
+
+    public void SaveData()
+    {
+        JsonManager.Instance.UpdateData(dataDic);
     }
 
     public void CleanData()
