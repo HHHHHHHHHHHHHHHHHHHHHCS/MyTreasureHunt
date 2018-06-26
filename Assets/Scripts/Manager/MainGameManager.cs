@@ -158,6 +158,7 @@ public sealed class MainGameManager : MonoBehaviour
     private Tweener pathTweener;
     private Vector2Int prePos, nowPos;
     private Vector2 dir;
+    private GameObject cameraCollider;
 
     private bool isSucceed;
 
@@ -180,6 +181,8 @@ public sealed class MainGameManager : MonoBehaviour
         CreateMap();
         InitMap();
         ResetCamera();
+
+
     }
 
     private void Update()
@@ -807,7 +810,8 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
                 ForNearElement(x, y, (_x, _y) =>
                  {
                      if (MapArray[_x, _y].ElementContent == ElementContent.BigWall
-                     || MapArray[_x, _y].ElementContent == ElementContent.Door)
+                     || MapArray[_x, _y].ElementContent == ElementContent.Door
+                     || MapArray[_x, _y].ElementContent == ElementContent.Exit)
                      {
                          isContineue = true;
                      }
@@ -1119,6 +1123,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
             return;
         }
         isSucceed = true;
+
         Hp += 5;
         Lv++;
         DataManager.Instance.UpdateData(PlayerAttribute.Lv, Lv);
@@ -1131,6 +1136,13 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         DataManager.Instance.SaveData();
         Anim.SetBool("Pass", true);
         MainUIManager.Instance.ShowPassPanel();
+
+        var effct = mainCamera.transform.Find("PassEffect").GetComponent<ParticleSystem>();
+        var shape = effct.shape;
+        shape.radius = 11 * mainCamera.orthographicSize / 6;
+        effct.Play();
+
+        OnMoveMaskShow();
     }
 
     public void GameEnd()
@@ -1146,5 +1158,10 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         PoolManager.Instance.DoDestory();
         MainUIManager.Instance.DoDestory();
         SceneManager.LoadScene(sceneName);
+    }
+
+    public void OnMoveMaskShow()
+    {
+        transform.Find("CameraCollider").transform.position = Vector3.back;
     }
 }
