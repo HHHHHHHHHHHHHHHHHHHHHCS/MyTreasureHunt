@@ -6,13 +6,15 @@ public class SelectGizmos : MonoBehaviour
 {
     public ToolType toolType;
 
-    private void OnMouseUp()
+    private void OnMouseUpAsButton()
     {
+
         int posX = (int)transform.position.x;
         int posY = (int)transform.position.y;
         switch (toolType)
         {
             case ToolType.Hoe:
+                AudioManager.Instance.PlayClip(AudioManager.Instance.hoe);
                 MainGameManager.Instance.Hoe--;
                 MainUIManager.Instance.HoeToggle.isOn = false;
                 MainGameManager.Instance.ForNearElement(posX, posY
@@ -34,6 +36,7 @@ public class SelectGizmos : MonoBehaviour
                     });
                 break;
             case ToolType.Tnt:
+                AudioManager.Instance.PlayClip(AudioManager.Instance.tnt);
                 MainGameManager.Instance.Tnt--;
                 MainUIManager.Instance.TntToggle.isOn = false;
                 MainGameManager.Instance.ForNearElement(posX, posY
@@ -55,6 +58,7 @@ public class SelectGizmos : MonoBehaviour
                     });
                 break;
             case ToolType.Map:
+                AudioManager.Instance.PlayClip(AudioManager.Instance.map);
                 MainGameManager.Instance.Map--;
                 MainUIManager.Instance.MapToggle.isOn = false;
                 MainGameManager.Instance.ForNearElement(posX, posY, 3

@@ -6,6 +6,7 @@ using Cinemachine;
 using Random = UnityEngine.Random;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public sealed class MainGameManager : MonoBehaviour
 {
@@ -165,6 +166,9 @@ public sealed class MainGameManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        GameObject.Find("MainGameManager").GetComponent<AudioManager>().OnInit();
+        GameObject.Find("UIRoot").GetComponent<MainUIManager>().OnInit();
+
         LoadSaveData();
         prePos = Vector2Int.one * 100000;
         var poolManager = PoolManager.Instance;
@@ -181,7 +185,10 @@ public sealed class MainGameManager : MonoBehaviour
         CreateMap();
         InitMap();
         ResetCamera();
+    }
 
+    private void Start()
+    {
 
     }
 
@@ -194,6 +201,7 @@ public sealed class MainGameManager : MonoBehaviour
         nowPos = player.transform.position.ToVec2Int();
         if (prePos != nowPos)
         {
+            AudioManager.Instance.PlayClip(AudioManager.Instance.move);
             ResetPlayerTarget();
             dir = new Vector2Int(Mathf.Clamp(nowPos.x - prePos.x, -1, 1)
                 , Mathf.Clamp(nowPos.y - prePos.y, -1, 1));
@@ -991,6 +999,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         }
         else
         {
+            AudioManager.Instance.PlayClip(AudioManager.Instance.why);
             Anim.SetTrigger("Why");
         }
     }
@@ -1042,6 +1051,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         List<AStarPoint> pathList;
         if (!AStarPathFinding.FindPath(s, e, out pathList))
         {
+            AudioManager.Instance.PlayClip(AudioManager.Instance.why);
             Anim.SetTrigger("Why");
             return;
         }
@@ -1058,6 +1068,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
     #region Player Method
     public void TakeDamage()
     {
+        AudioManager.Instance.PlayClip(AudioManager.Instance.hurt);
         if (Armor > 0)
         {
             Armor--;
@@ -1081,7 +1092,10 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
 
     private void OnMouseOver()
     {
-
+        if(EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -1114,6 +1128,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         Tnt = manager.ReadData(PlayerAttribute.Tnt);
         Map = manager.ReadData(PlayerAttribute.Map);
         Gold = manager.ReadData(PlayerAttribute.Gold);
+        AudioManager.Instance.SwitchMuteState(manager.ReadData(PlayerAttribute.IsMute));
     }
 
     public void GotoNextLevel()
@@ -1136,7 +1151,7 @@ private void CreateCloseTool(CloseAreaInfo _info, List<int> _avaliableIndex)
         DataManager.Instance.SaveData();
         Anim.SetBool("Pass", true);
         MainUIManager.Instance.ShowPassPanel();
-
+        AudioManager.Instance.PlayClip(AudioManager.Instance.winbg);
         var effct = mainCamera.transform.Find("PassEffect").GetComponent<ParticleSystem>();
         var shape = effct.shape;
         shape.radius = 11 * mainCamera.orthographicSize / 6;

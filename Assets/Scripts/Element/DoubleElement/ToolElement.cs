@@ -60,6 +60,7 @@ public class ToolElement : DoubleCoverElement
 
     private void GetTool()
     {
+        AudioManager.Instance.PlayClip(AudioManager.Instance.pick);
         MainGameManager manager = MainGameManager.Instance;
         switch (toolType)
         {

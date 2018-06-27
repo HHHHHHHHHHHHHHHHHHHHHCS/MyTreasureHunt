@@ -25,9 +25,47 @@ public class AudioManager : MonoBehaviour
 
     private AudioSource audioSource;
 
-    private void Awake()
+    private bool isMute = false;
+
+    public void OnInit()
     {
         Instance = this;
         audioSource = GetComponent<AudioSource>();
+    }
+
+    public void SwitchMuteState(int? _isMute = null)
+    {
+        isMute = _isMute.HasValue ? (_isMute == 0 ? false : true) : !isMute;
+        if (isMute)
+        {
+            StopBGM();
+        }
+        else
+        {
+            PlayBGM();
+        }
+        DataManager.Instance.UpdateData(PlayerAttribute.IsMute, isMute ? 1 : 0);
+        DataManager.Instance.SaveData();
+    }
+
+    public void PlayClip(AudioClip clip)
+    {
+        if (!isMute)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+    }
+
+    public void PlayBGM()
+    {
+        if (!isMute)
+        {
+            audioSource.Play();
+        }
+    }
+
+    public void StopBGM()
+    {
+        audioSource.Stop();
     }
 }

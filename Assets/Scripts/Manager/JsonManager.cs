@@ -16,6 +16,7 @@ public enum PlayerAttribute
     Tnt,
     Map,
     Gold,
+    IsMute,//是否禁音,偷懒用
 }
 
 public class JsonManager
@@ -120,14 +121,24 @@ public class JsonManager
             return false;
         }
 
-        Dictionary<PlayerAttribute, int> playerDic = new Dictionary<PlayerAttribute, int>();
-        playerDic.Add(PlayerAttribute.Lv, 1);
-        playerDic.Add(PlayerAttribute.Hp, 20);
-        for(int i=2;i<Enum.GetValues(typeof( PlayerAttribute)).Length;i++)
+        int? isMute = null;
+        var oldData = ReadData();
+        if (oldData!=null&&oldData.ContainsKey( PlayerAttribute.IsMute))
         {
-            playerDic.Add((PlayerAttribute)i, 0);
+            isMute = oldData[PlayerAttribute.IsMute];
         }
 
+        Dictionary<PlayerAttribute, int> playerDic = new Dictionary<PlayerAttribute, int>
+        {
+            { PlayerAttribute.Lv, 1 },
+            { PlayerAttribute.Hp, 20 }
+        };
+        for (int i=2;i<=(int)PlayerAttribute.Gold;i++)
+        {
+            playerDic.Add((PlayerAttribute)i, 1);
+        }
+
+        playerDic.Add(PlayerAttribute.IsMute, isMute??1);
         SaveData(playerDic);
         return true;
     }

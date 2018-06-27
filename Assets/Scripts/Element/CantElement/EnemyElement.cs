@@ -17,12 +17,14 @@ public class EnemyElement : CantCoveredElement
     {
         if (Vector3.Distance(transform.position, MainGameManager.Instance.Player.transform.position) < 1.5f)
         {
+
             switch (MainGameManager.Instance.WeaponType)
             {
                 case WeaponType.None:
                     base.OnLeftMouseButton();
                     break;
                 case WeaponType.Arrow:
+                    AudioManager.Instance.PlayClip(AudioManager.Instance.enemy);
                     MainGameManager.Instance.Arrow--;
                     if(MainGameManager.Instance.Arrow<=0)
                     {
@@ -31,6 +33,7 @@ public class EnemyElement : CantCoveredElement
                     ToNumberElement(true);
                     break;
                 case WeaponType.Sword:
+                    AudioManager.Instance.PlayClip(AudioManager.Instance.enemy);
                     ToNumberElement(true);
                     break;
             }

@@ -101,6 +101,7 @@ public class BaseElement : MonoBehaviour
 
     public virtual void ToNumberElement(bool needEffect = false)
     {
+        AudioManager.Instance.PlayClip(AudioManager.Instance.dig);
         var element = MainGameManager.Instance.SetElement<NumberElement>(x, y);
         element.NeedEffect = needEffect;
         element.UncoveredElement();

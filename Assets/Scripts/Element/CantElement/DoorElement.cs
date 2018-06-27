@@ -17,6 +17,7 @@ public class DoorElement : CantCoveredElement
         {
             if(MainGameManager.Instance.Key>0)
             {
+                AudioManager.Instance.PlayClip(AudioManager.Instance.door);
                 MainGameManager.Instance.Key--;
                 Instantiate(MainGameManager.Instance.OpenDoorEffect,transform);
                 ToNumberElement(true);

@@ -52,7 +52,7 @@ public class MainUIManager : MonoBehaviour
 
     private bool isHide;
 
-    private void Awake()
+    public void OnInit()
     {
         Instance = this;
         bottomPanel = transform.Find("BottomPanel").transform as RectTransform;
@@ -89,12 +89,15 @@ public class MainUIManager : MonoBehaviour
         endPanel = transform.Find("EndPanel").transform as RectTransform;
         var exitButton = endPanel.Find("Bg/ExitButton").GetComponent<Button>();
 
+        var audioMuteButton = bottomPanel.Find("AudioMuteButton").GetComponent<Button>();
+
         bottomPanel.Find("LevelButton").GetComponent<Button>().onClick.AddListener(OnLevelButtonClick);
         HoeToggle.onValueChanged.AddListener(OnHoeSelected);
         TntToggle.onValueChanged.AddListener(OnTNTSelected);
         MapToggle.onValueChanged.AddListener(OnMapSelected);
-        nextLevelButton.onClick.AddListener(() => { MainGameManager.Instance.ChangeScene(SceneManager.GetActiveScene().name); });
-        exitButton.onClick.AddListener(() => { MainGameManager.Instance.ChangeScene("menu"); });
+        nextLevelButton.onClick.AddListener(() => { AudioManager.Instance.PlayClip(AudioManager.Instance.button); MainGameManager.Instance.ChangeScene(SceneManager.GetActiveScene().name); });
+        exitButton.onClick.AddListener(() => { AudioManager.Instance.PlayClip(AudioManager.Instance.button); MainGameManager.Instance.ChangeScene("menu"); });
+        audioMuteButton.onClick.AddListener(() => { AudioManager.Instance.PlayClip(AudioManager.Instance.button); AudioManager.Instance.SwitchMuteState(); });
     }
 
     private void Start()

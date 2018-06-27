@@ -52,6 +52,7 @@ public class SingleCoverElement : BaseElement
 
     public virtual void AddFlag()
     {
+        AudioManager.Instance.PlayClip(AudioManager.Instance.flag);
         ElementState = ElementState.Marked;
         flag = Instantiate(MainGameManager.Instance.FlagElement, transform);
         flag.transform.localPosition = Vector3.zero;
