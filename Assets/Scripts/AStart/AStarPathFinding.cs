@@ -209,7 +209,7 @@ public class AStarPathFinding
                     }
                     else
                     {
-                        double goffest = Math.Abs(directs[i, 0]) != Math.Abs(directs[i, 1])
+                        double goffest = data.g+Math.Abs(directs[i, 0]) != Math.Abs(directs[i, 1])
                             ? StraightLine : SlantLine;
                         double h = CalH(newPoint);
                         AStarPointData newData = new AStarPointData(newPoint, goffest, h, data);
