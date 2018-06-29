@@ -74,12 +74,12 @@ public class AStarPathFinding
     /// </summary>
     /// <param name="data"></param>
     /// <returns></returns>
-    public static double CalG(AStarPointData data,int dir)
+    public static double CalG(AStarPointData data, AStarPoint newPos)
     {
-        double result = data.g + Math.Abs(directs[dir, 0]) != Math.Abs(directs[dir, 1])
+        double result = data.g + Math.Abs(newPos.x-data.pointPos.x) != Math.Abs(newPos.y - data.pointPos.y)
                             ? StraightLine : SlantLine;
         double temp = 0;
-        var _type = Map[data.pointPos.x, data.pointPos.y];
+        var _type = Map[newPos.x, newPos.y];
         switch (_type)
         {
             case Space0:
@@ -221,7 +221,7 @@ public class AStarPathFinding
                     //查找判断点是否在"开启列表"中
                     AStarPointData tempData = openList.Find(x => x.pointPos.Equals(newPoint));
 
-                    double tempG = CalG(data,i) ;
+                    double tempG = CalG(data, newPoint) ;
                     if (tempData != null)
                     {
                         if (tempData.g > tempG)
