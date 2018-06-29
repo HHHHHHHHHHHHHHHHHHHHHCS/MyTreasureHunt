@@ -67,7 +67,31 @@ public class AStarPathFinding
     /// </summary>
     public static AStarPoint End_Pnt;
     #endregion
-    #region H相关
+    #region G和H相关
+
+    /// <summary>
+    /// 计算G
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static double CalG(AStarPointData data,int dir)
+    {
+        double result = data.g + Math.Abs(directs[dir, 0]) != Math.Abs(directs[dir, 1])
+                            ? StraightLine : SlantLine;
+        double temp = 0;
+        var _type = Map[data.pointPos.x, data.pointPos.y];
+        switch (_type)
+        {
+            case Space0:
+                temp = 1;
+                break;
+            case Space1:
+                temp = 10;
+                break;
+        }
+        return result+ temp;
+    }
+
     /// <summary>
     /// 计算H的抽象方法
     /// </summary>
@@ -196,11 +220,10 @@ public class AStarPathFinding
                     }
                     //查找判断点是否在"开启列表"中
                     AStarPointData tempData = openList.Find(x => x.pointPos.Equals(newPoint));
+
+                    double tempG = CalG(data,i) ;
                     if (tempData != null)
                     {
-                        double goffest = Math.Abs(directs[i, 0]) != Math.Abs(directs[i, 1])
-                            ? StraightLine : SlantLine;
-                        double tempG = data.g + goffest;
                         if (tempData.g > tempG)
                         {
                             tempData.g = tempG;
@@ -209,10 +232,8 @@ public class AStarPathFinding
                     }
                     else
                     {
-                        double goffest = data.g+Math.Abs(directs[i, 0]) != Math.Abs(directs[i, 1])
-                            ? StraightLine : SlantLine;
                         double h = CalH(newPoint);
-                        AStarPointData newData = new AStarPointData(newPoint, goffest, h, data);
+                        AStarPointData newData = new AStarPointData(newPoint, tempG, h, data);
                         openList.Add(newData);
                     }
                 }
