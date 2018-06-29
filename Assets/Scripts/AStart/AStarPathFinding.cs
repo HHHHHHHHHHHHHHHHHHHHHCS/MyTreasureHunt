@@ -113,7 +113,7 @@ public class AStarPathFinding
     }
 
     /// <summary>
-    /// 获取曼哈顿距离
+    /// 获取欧几里得距离
     /// </summary>
     /// <param name="pnt"></param>
     /// <returns></returns>
@@ -123,7 +123,7 @@ public class AStarPathFinding
     }
 
     /// <summary>
-    /// 获取曼哈顿距离
+    /// 获取Pow欧几里得距离
     /// </summary>
     /// <param name="pnt"></param>
     /// <returns></returns>
